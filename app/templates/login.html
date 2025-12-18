@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md text-center">
+    <h1 class="text-2xl font-bold mb-4 text-gray-800">Bem-vindo, Guardião!</h1>
+    <p class="mb-6 text-gray-600">Identifique-se para proteger sua cidade e ganhar status.</p>
+
+    <form method="post" class="space-y-4">
+        <div>
+            <label for="phone" class="sr-only">Telefone</label>
+            <input type="tel" name="phone" id="phone" placeholder="(11) 99999-9999" required
+                   class="w-full text-center text-xl p-4 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none">
+        </div>
+
+        <button type="submit"
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-4 rounded-xl text-xl shadow-lg transform transition active:scale-95">
+            <i class="fas fa-paper-plane mr-2"></i> Enviar Código
+        </button>
+    </form>
+
+    <div class="mt-8 text-sm text-gray-400">
+        <p>Não precisa de senha.</p>
+        <p>Apenas seu número de celular.</p>
+    </div>
+</div>
+{% endblock %}

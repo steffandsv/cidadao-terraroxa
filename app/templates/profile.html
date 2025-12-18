@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- User Card -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl shadow-lg p-6 text-white text-center">
+        <div class="mb-4">
+            <div class="w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center text-blue-600 text-4xl shadow-inner border-4 border-blue-300">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+        </div>
+        <h1 class="text-2xl font-bold">{{ user.name or user.phone }}</h1>
+        <div class="inline-block bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold mt-2 shadow">
+            {{ user.level_title }}
+        </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="flex justify-between items-end mb-2">
+            <span class="text-gray-600 font-bold">Progresso</span>
+            <span class="text-blue-600 font-bold text-xl">{{ balance }} pts</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-4">
+            <div class="bg-blue-600 h-4 rounded-full transition-all duration-1000" style="width: {{ progress }}%"></div>
+        </div>
+        <p class="text-xs text-right text-gray-400 mt-1">Próximo nível em breve...</p>
+
+        <!-- Share Button (Mock) -->
+        <button class="mt-4 w-full border-2 border-green-500 text-green-600 font-bold py-2 rounded-lg hover:bg-green-50 transition">
+            <i class="fab fa-whatsapp mr-2"></i> Compartilhar Conquista
+        </button>
+    </div>
+
+    <!-- History -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="bg-gray-50 p-4 border-b border-gray-100">
+            <h3 class="font-bold text-gray-700">Histórico de Ações</h3>
+        </div>
+        <ul class="divide-y divide-gray-100">
+            {% for entry in history %}
+            <li class="p-4 flex items-center justify-between">
+                <div>
+                    <p class="font-bold text-gray-800">{{ entry.description }}</p>
+                    <p class="text-xs text-gray-400">{{ entry.created_at }}</p>
+                </div>
+                <span class="font-bold {% if entry.amount > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                    {% if entry.amount > 0 %}+{% endif %}{{ entry.amount }}
+                </span>
+            </li>
+            {% else %}
+            <li class="p-4 text-center text-gray-500 text-sm">Nenhuma atividade ainda.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Admin Link (Hidden-ish) -->
+    <div class="text-center pt-8 opacity-20 hover:opacity-100 transition">
+        <a href="{{ url_for('main.admin') }}" class="text-xs">Acesso Restrito</a>
+    </div>
+</div>
+{% endblock %}

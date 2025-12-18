@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md text-center">
+    <h1 class="text-2xl font-bold mb-4 text-gray-800">Código de Acesso</h1>
+    <p class="mb-6 text-gray-600">Enviamos um código para <strong>{{ phone }}</strong>.</p>
+    <p class="mb-4 text-xs text-red-500">(Dev: Veja o console para o código)</p>
+
+    <form method="post" class="space-y-4">
+        <div>
+            <label for="otp" class="sr-only">Código OTP</label>
+            <input type="text" name="otp" id="otp" placeholder="0000" maxlength="4" required
+                   class="w-full text-center text-4xl tracking-widest p-4 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none">
+        </div>
+
+        <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl text-xl shadow-lg transform transition active:scale-95">
+            <i class="fas fa-check-circle mr-2"></i> Entrar
+        </button>
+    </form>
+</div>
+{% endblock %}
