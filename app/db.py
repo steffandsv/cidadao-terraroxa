@@ -1,14 +1,16 @@
-import sqlite3
+import mysql.connector
 import click
+import os
 from flask import current_app, g
 
 def get_db():
     if 'db' not in g:
-        g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
+        g.db = mysql.connector.connect(
+            host=current_app.config['DB_HOST'],
+            user=current_app.config['DB_USER'],
+            password=current_app.config['DB_PASS'],
+            database=current_app.config['DB_NAME']
         )
-        g.db.row_factory = sqlite3.Row
 
     return g.db
 
@@ -20,9 +22,17 @@ def close_db(e=None):
 
 def init_db():
     db = get_db()
+    cursor = db.cursor()
 
     with current_app.open_resource('../schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
+        schema = f.read().decode('utf8')
+        statements = schema.split(';')
+        for statement in statements:
+            if statement.strip():
+                cursor.execute(statement)
+        db.commit()
+    
+    cursor.close()
 
 @click.command('init-db')
 def init_db_command():
@@ -33,9 +43,3 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
-
-def query_db(query, args=(), one=False):
-    cur = get_db().execute(query, args)
-    rv = cur.fetchall()
-    cur.close()
-    return (rv[0] if rv else None) if one else rv

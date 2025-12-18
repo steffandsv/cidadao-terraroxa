@@ -1,22 +1,21 @@
 {% extends 'base.html' %}
 
+{% block title %}Verificar Código{% endblock %}
+
 {% block content %}
-<div class="bg-white p-6 rounded-lg shadow-md text-center">
-    <h1 class="text-2xl font-bold mb-4 text-gray-800">Código de Acesso</h1>
-    <p class="mb-6 text-gray-600">Enviamos um código para <strong>{{ phone }}</strong>.</p>
-    <p class="mb-4 text-xs text-red-500">(Dev: Veja o console para o código)</p>
-
-    <form method="post" class="space-y-4">
+<div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl mt-10 p-6">
+    <h1 class="text-2xl font-bold text-center mb-6 text-gray-800">Verificar Código</h1>
+    <p class="text-center text-gray-600 mb-8">Enviamos um código para {{ phone }}. (Verifique o console do servidor)</p>
+    
+    <form method="post" class="space-y-6">
         <div>
-            <label for="otp" class="sr-only">Código OTP</label>
-            <input type="text" name="otp" id="otp" placeholder="0000" maxlength="4" required
-                   class="w-full text-center text-4xl tracking-widest p-4 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none">
+            <label for="otp" class="block text-sm font-medium text-gray-700">Código de 4 Dígitos</label>
+            <input type="text" name="otp" id="otp" placeholder="0000" required maxlength="4"
+                class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest">
         </div>
-
-        <button type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl text-xl shadow-lg transform transition active:scale-95">
-            <i class="fas fa-check-circle mr-2"></i> Entrar
+        <button type="submit" 
+            class="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg shadow-sm text-xl font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            Entrar
         </button>
     </form>
 </div>
-{% endblock %}
