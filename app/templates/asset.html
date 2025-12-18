@@ -1,69 +1,41 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ asset['type'] }} {{ asset['hash_code'] }}{% endblock %}
+
 {% block content %}
-<div class="space-y-6">
+<div class="max-w-2xl mx-auto space-y-6">
     <!-- Asset Header -->
-    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="h-32 bg-gray-300 relative">
-            {% if asset.historical_photo_url %}
-                <img src="{{ asset.historical_photo_url }}" class="w-full h-full object-cover opacity-80">
-            {% else %}
-                <div class="w-full h-full flex items-center justify-center text-gray-500">
-                    <i class="fas fa-image fa-2x"></i>
-                </div>
-            {% endif %}
-            <div class="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-4">
-                <h1 class="text-white text-2xl font-bold drop-shadow-md">{{ asset.type }} #{{ asset.hash_code }}</h1>
-            </div>
-        </div>
-        <div class="p-4">
-            <p class="text-gray-600">{{ asset.description }}</p>
-        </div>
+    <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+        <h1 class="text-3xl font-bold text-gray-800">{{ asset['type'] }}</h1>
+        <p class="text-xl text-gray-500 font-mono mt-2">{{ asset['hash_code'] }}</p>
+        <p class="text-gray-600 mt-4">{{ asset['description'] }}</p>
     </div>
 
-    <!-- Actions Grid -->
-    <div class="grid grid-cols-1 gap-4">
+    <!-- Main Actions Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         <!-- Report Problem -->
-        <a href="{{ url_for('main.report', asset_id=asset.id) }}"
-           class="block bg-red-100 hover:bg-red-200 border border-red-200 rounded-xl p-6 text-center shadow-sm transition">
-            <div class="text-red-600 mb-2">
-                <i class="fas fa-exclamation-triangle fa-3x"></i>
+        <a href="{{ url_for('main.report', asset_id=asset['id']) }}" class="block">
+            <div class="bg-red-50 hover:bg-red-100 border-2 border-red-200 rounded-xl p-6 flex flex-col items-center justify-center h-48 transition duration-200 cursor-pointer shadow-sm">
+                <span class="text-4xl mb-4">⚠️</span>
+                <h2 class="text-xl font-bold text-red-700">Reportar Problema</h2>
+                <p class="text-sm text-red-500 mt-2 text-center">Luz queimada, buraco, mato alto</p>
             </div>
-            <h3 class="font-bold text-red-800 text-lg">Reportar Problema</h3>
-            <p class="text-xs text-red-600 mt-1">Luz apagada, buraco, sujeira...</p>
         </a>
 
-        <!-- Time Tunnel (Placeholder for now, could link to same report logic with specific rule) -->
-        <div class="opacity-50 pointer-events-none block bg-yellow-100 border border-yellow-200 rounded-xl p-6 text-center shadow-sm">
-            <div class="text-yellow-600 mb-2">
-                <i class="fas fa-camera-retro fa-3x"></i>
-            </div>
-            <h3 class="font-bold text-yellow-800 text-lg">Túnel do Tempo</h3>
-            <p class="text-xs text-yellow-600 mt-1">Em breve: Compare com o passado!</p>
+        <!-- Time Tunnel -->
+        <div onclick="alert('Feature Coming Soon: Túnel do Tempo!')" class="bg-amber-50 hover:bg-amber-100 border-2 border-amber-200 rounded-xl p-6 flex flex-col items-center justify-center h-48 transition duration-200 cursor-pointer shadow-sm">
+            <span class="text-4xl mb-4">⏳</span>
+            <h2 class="text-xl font-bold text-amber-700">Túnel do Tempo</h2>
+            <p class="text-sm text-amber-500 mt-2 text-center">Veja foto histórica e ganhe pontos</p>
         </div>
 
-        <!-- Local Commerce (Mock) -->
-        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
-            <h3 class="font-bold text-gray-700 mb-3"><i class="fas fa-store mr-2"></i>Comércio Próximo</h3>
-            <ul class="space-y-3">
-                <li class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                    <div>
-                        <p class="font-bold text-sm">Padaria da Maria</p>
-                        <p class="text-xs text-gray-500">Pão quentinho a 50m</p>
-                    </div>
-                    <a href="#" class="text-green-600"><i class="fab fa-whatsapp fa-lg"></i></a>
-                </li>
-                <li class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                    <div>
-                        <p class="font-bold text-sm">Zé dos Reparos</p>
-                        <p class="text-xs text-gray-500">Eletricista a 100m</p>
-                    </div>
-                    <a href="#" class="text-green-600"><i class="fab fa-whatsapp fa-lg"></i></a>
-                </li>
-            </ul>
+        <!-- Local Commerce -->
+        <div onclick="alert('Feature Coming Soon: Comércio Local!')" class="md:col-span-2 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 rounded-xl p-6 flex flex-col items-center justify-center h-32 transition duration-200 cursor-pointer shadow-sm">
+            <span class="text-3xl mb-2">🏪</span>
+            <h2 class="text-lg font-bold text-blue-700">Comércio Local</h2>
+            <p class="text-sm text-blue-500 mt-1">Encontre serviços próximos</p>
         </div>
-
     </div>
 </div>
 {% endblock %}
