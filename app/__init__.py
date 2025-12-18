@@ -5,9 +5,15 @@ from flask import Flask, g
 def create_app(test_config=None):
     # Create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+
+    # Load configuration from Environment Variables (for Docker/MySQL)
     app.config.from_mapping(
-        SECRET_KEY='dev',
+        SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
         DATABASE=os.path.join(app.instance_path, 'civic.sqlite'),
+        DB_HOST=os.environ.get('DB_HOST'),
+        DB_USER=os.environ.get('DB_USER'),
+        DB_PASS=os.environ.get('DB_PASS'),
+        DB_NAME=os.environ.get('DB_NAME'),
     )
 
     if test_config is None:
