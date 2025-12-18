@@ -5,9 +5,12 @@
     "command-working-directory": "/app",
     "trigger-rule": {
       "match": {
-        "type": "payload-hash-sha1",
+        "type": "payload-hmac-sha1",
         "secret": "MABUS_SUPER_SECRET",
-        "parameter": "X-Hub-Signature"
+        "parameter": {
+          "source": "header",
+          "name": "X-Hub-Signature"
+        }
       }
     }
   }
