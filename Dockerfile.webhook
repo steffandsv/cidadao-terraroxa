@@ -1,0 +1,2 @@
+FROM adnanh/webhook:latest
+RUN apk add --no-cache docker-cli git openssh-client

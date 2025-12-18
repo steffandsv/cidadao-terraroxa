@@ -1,0 +1,14 @@
+[
+  {
+    "id": "redeploy-cidadao",
+    "execute-command": "/var/scripts/redeploy.sh",
+    "command-working-directory": "/app",
+    "trigger-rule": {
+      "match": {
+        "type": "payload-hash-sha1",
+        "secret": "MABUS_SUPER_SECRET",
+        "parameter": "X-Hub-Signature"
+      }
+    }
+  }
+]
