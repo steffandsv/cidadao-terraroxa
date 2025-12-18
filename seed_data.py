@@ -5,7 +5,9 @@ from app import create_app
 def seed():
     app = create_app()
     with app.app_context():
+        # Get the DB connection (MySQL connector)
         db = get_db()
+        cursor = db.cursor()
 
         print("Seeding Gamification Rules...")
         rules = [
@@ -13,10 +15,10 @@ def seed():
             ('time_tunnel', 100, 1, '📸'),
             ('share_app', 10, 0, '📢')
         ]
-        db.executemany(
-            'INSERT OR IGNORE INTO gamification_rules (slug, points, requires_approval, icon) VALUES (?, ?, ?, ?)',
-            rules
-        )
+
+        # MySQL syntax: INSERT IGNORE ... VALUES (%s, %s, ...)
+        sql_rules = 'INSERT IGNORE INTO gamification_rules (slug, points, requires_approval, icon) VALUES (%s, %s, %s, %s)'
+        cursor.executemany(sql_rules, rules)
 
         print("Seeding Assets...")
         assets = [
@@ -24,14 +26,15 @@ def seed():
             ('PRACA-MATRIZ', 'Praça', -23.5500, -46.6300, 'Praça da Matriz. Ponto de encontro desde 1950.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Pra%C3%A7a_da_S%C3%A9_-_S%C3%A3o_Paulo.jpg/640px-Pra%C3%A7a_da_S%C3%A9_-_S%C3%A3o_Paulo.jpg'),
             ('CHAFARIZ-02', 'Chafariz', -23.5510, -46.6340, 'Chafariz dos Desejos. Diz a lenda que quem bebe aqui volta sempre.', None)
         ]
+
+        sql_assets = 'INSERT IGNORE INTO assets (hash_code, type, geo_lat, geo_lng, description, historical_photo_url) VALUES (%s, %s, %s, %s, %s, %s)'
+
         # Using loop to check for existence or just simple insert or ignore
         for a in assets:
-            db.execute(
-                'INSERT OR IGNORE INTO assets (hash_code, type, geo_lat, geo_lng, description, historical_photo_url) VALUES (?, ?, ?, ?, ?, ?)',
-                a
-            )
+            cursor.execute(sql_assets, a)
 
         db.commit()
+        cursor.close()
         print("Seeding Complete.")
 
 if __name__ == '__main__':
