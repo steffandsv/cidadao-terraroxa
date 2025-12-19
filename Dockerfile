@@ -24,8 +24,8 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Garante que o runner tenha o runtime do openssl
-RUN apk add --no-cache openssl
+# Garante que o runner tenha o runtime do openssl e compatibilidade
+RUN apk add --no-cache openssl libc6-compat
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -38,8 +38,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/start.sh ./start.sh
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
-# Install Prisma CLI locally and fix permissions
-RUN npm install prisma@5.22.0 && chown -R nextjs:nodejs /app/node_modules
+# Install Prisma CLI and Client locally to ensure generator is available
+RUN npm install prisma@5.22.0 @prisma/client@5.22.0 && chown -R nextjs:nodejs /app/node_modules
 
 USER nextjs
 EXPOSE 3000
