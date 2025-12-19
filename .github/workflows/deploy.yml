@@ -1,0 +1,23 @@
+name: Deploy Mabus VPS (Senha Direta)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH com Senha
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: "steffan"
+          password: ${{ secrets.PASSWORD }}
+          port: 2222
+          script: |
+            cd /opt/cidadao-terraroxa
+            git fetch --all
+            git reset --hard origin/main
+            docker compose up -d --build web
+            docker image prune -f
