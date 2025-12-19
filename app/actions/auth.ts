@@ -19,47 +19,73 @@ import { redirect } from 'next/navigation'
 // I'll just use '1234' for all users for this demo to ensure "Easy for elderly" (and developers).
 
 export async function login(formData: FormData) {
+  try {
+    const phone = formData.get('phone') as string
+
+    if (!phone) {
+        return
+    }
+
+    // Check if user exists, if not create
+    let user = await prisma.user.findUnique({ where: { phone } })
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: { phone }
+      })
+    }
+
+    // In a real app, send SMS here.
+    // For this demo, we assume OTP is sent.
+    // We'll redirect to OTP page.
+
+  } catch (e) {
+    console.error("Login Error:", e)
+    throw e // Rethrow to show error page
+  }
+
+  // Redirect must be outside try/catch in Next.js server actions if it throws specific errors,
+  // but standard redirect() throws NEXT_REDIRECT which is caught by Next.js.
+  // However, catching it inside try/catch blocks the redirect.
+  // So we assume the logic above is safe, and we redirect outside or rethrow.
+  // Wait, if I catch 'e', I might catch the redirect exception.
+  // Best practice: perform logic, then redirect.
+
   const phone = formData.get('phone') as string
-
-  if (!phone) {
-      // In server actions used as form actions, we can't easily return errors to UI without client components.
-      // For simplicity in this demo, we just ignore or redirect.
-      return
-  }
-
-  // Check if user exists, if not create
-  let user = await prisma.user.findUnique({ where: { phone } })
-
-  if (!user) {
-    user = await prisma.user.create({
-      data: { phone }
-    })
-  }
-
-  // In a real app, send SMS here.
-  // For this demo, we assume OTP is sent.
-  // We'll redirect to OTP page.
-
   redirect(`/otp?phone=${phone}`)
 }
 
 export async function verifyOTP(phone: string, otp: string) {
-  // Mock verification
-  if (otp === '1234' || otp === '0000') {
-    // Success
-    const user = await prisma.user.findUnique({ where: { phone } })
-    if (!user) return { error: 'Usuário não encontrado' }
+  try {
+    // Mock verification
+    if (otp === '1234' || otp === '0000') {
+      // Success
+      const user = await prisma.user.findUnique({ where: { phone } })
+      if (!user) return { error: 'Usuário não encontrado' }
 
-    // Create session
-    const session = await encrypt({ user: { id: user.id, phone: user.phone, name: user.name, role: user.role } })
+      // Create session
+      const session = await encrypt({ user: { id: user.id, phone: user.phone, name: user.name, role: user.role } })
 
-    const cookieStore = await cookies()
-    cookieStore.set('session', session, { httpOnly: true, secure: process.env.NODE_ENV === 'production' })
+      const cookieStore = await cookies()
+      // Set to 10 years (approx 315360000 seconds)
+      cookieStore.set('session', session, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 315360000,
+        path: '/'
+      })
 
-    redirect('/dashboard')
-  } else {
-    return { error: 'Código inválido' }
+    } else {
+      return { error: 'Código inválido' }
+    }
+  } catch (e) {
+      console.error("Verify OTP Error:", e)
+      // Check if it's a redirect error
+      if ((e as Error).message === 'NEXT_REDIRECT') throw e
+      throw e
   }
+
+  redirect('/dashboard')
 }
 
 export async function logout() {

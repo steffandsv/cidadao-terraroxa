@@ -8,7 +8,7 @@ export async function encrypt(payload: any) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('24h') // Session lasts 24 hours
+    .setExpirationTime('10y') // Session lasts 10 years (effectively forever)
     .sign(key)
 }
 

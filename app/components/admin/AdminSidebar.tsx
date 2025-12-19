@@ -7,7 +7,7 @@ import { clsx } from 'clsx'
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/assets', label: 'Postes (Ativos)', icon: Lightbulb },
+  { href: '/admin/assets', label: 'Patrimônio', icon: Lightbulb },
   { href: '/admin/users', label: 'Usuários', icon: Users },
   { href: '/admin/quests', label: 'Missões', icon: ScrollText },
   { href: '/admin/review', label: 'Revisão', icon: CheckSquare },
