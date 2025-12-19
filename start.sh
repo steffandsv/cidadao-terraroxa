@@ -11,6 +11,10 @@ npx prisma generate
 echo "Pushing DB schema..."
 npx prisma db push --accept-data-loss
 
+# Seed initial data (Asset Types)
+echo "Seeding database..."
+npx tsx prisma/seed.ts || echo "Seed failed or already applied"
+
 # Also try to apply migrations if baseline exists (optional, mostly for history)
 # echo "Applying migrations..."
 # npx prisma migrate deploy || echo "Migration failed, relying on db push"

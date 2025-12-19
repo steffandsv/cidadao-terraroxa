@@ -37,7 +37,7 @@ model AssetType {
 
 model Asset {
   id                 Int      @id @default(autoincrement())
-  assetTypeId        Int      @map("asset_type_id")
+  assetTypeId        Int      @default(1) @map("asset_type_id")
   hashCode           String   @unique @map("hash_code") @db.VarChar(50)
   geoLat             Decimal? @map("geo_lat") @db.Decimal(10, 8)
   geoLng             Decimal? @map("geo_lng") @db.Decimal(11, 8)
