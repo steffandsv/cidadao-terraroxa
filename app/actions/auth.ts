@@ -51,7 +51,7 @@ export async function verifyOTP(phone: string, otp: string) {
     if (!user) return { error: 'Usuário não encontrado' }
 
     // Create session
-    const session = await encrypt({ user: { id: user.id, phone: user.phone, name: user.name } })
+    const session = await encrypt({ user: { id: user.id, phone: user.phone, name: user.name, role: user.role } })
 
     const cookieStore = await cookies()
     cookieStore.set('session', session, { httpOnly: true, secure: process.env.NODE_ENV === 'production' })
