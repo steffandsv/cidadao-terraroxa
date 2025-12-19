@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/db'
 // I don't have shadcn components. I'll build raw tailwind.
 
+export const dynamic = 'force-dynamic'
+
 async function getStats() {
   // If DB is unreachable, this will fail. I'll wrap in try/catch for the demo to not crash.
   try {

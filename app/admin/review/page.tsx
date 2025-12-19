@@ -2,6 +2,8 @@ import { prisma } from '@/lib/db'
 import { reviewAction } from '@/app/actions/review'
 import { Check, X } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ReviewPage() {
     let pendingActions: any[] = []
     try {
