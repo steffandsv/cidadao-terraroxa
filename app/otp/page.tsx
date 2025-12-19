@@ -10,10 +10,14 @@ function OTPForm() {
   const [error, setError] = useState('')
 
   async function handleSubmit(formData: FormData) {
-    const otp = formData.get('otp') as string
-    const res = await verifyOTP(phone, otp)
-    if (res?.error) {
-      setError(res.error)
+    try {
+      const otp = formData.get('otp') as string
+      const res = await verifyOTP(phone, otp)
+      if (res?.error) {
+        setError(res.error)
+      }
+    } catch (e: any) {
+      setError(e.message || "Erro inesperado")
     }
   }
 
