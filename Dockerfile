@@ -27,9 +27,6 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Garante que o runner tenha o runtime do openssl
 RUN apk add --no-cache openssl
 
-# Instala Prisma CLI globalmente para executar migrations/push no start.sh
-RUN npm install -g prisma@5.22.0
-
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -40,6 +37,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/start.sh ./start.sh
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+
+# Install Prisma CLI locally and fix permissions
+RUN npm install prisma@5.22.0 && chown -R nextjs:nodejs /app/node_modules
 
 USER nextjs
 EXPOSE 3000
