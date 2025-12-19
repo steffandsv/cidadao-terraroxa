@@ -7,6 +7,12 @@ echo "Starting deployment script..."
 echo "Generating Prisma Client..."
 npx prisma generate
 
+# Fix Data Integrity before Schema Push
+# This handles the case where 'assets' table exists with data but 'asset_types' is empty/missing
+# which causes FK constraint failures during 'db push'.
+echo "Running integrity fix..."
+npx tsx prisma/fix_integrity.ts || echo "Integrity fix skipped or failed (non-critical if tables don't exist)"
+
 # Push schema to database (safely updates schema without data loss if possible)
 echo "Pushing DB schema..."
 npx prisma db push --accept-data-loss
@@ -14,10 +20,6 @@ npx prisma db push --accept-data-loss
 # Seed initial data (Asset Types)
 echo "Seeding database..."
 npx tsx prisma/seed.ts || echo "Seed failed or already applied"
-
-# Also try to apply migrations if baseline exists (optional, mostly for history)
-# echo "Applying migrations..."
-# npx prisma migrate deploy || echo "Migration failed, relying on db push"
 
 # Start the application
 echo "Starting Next.js..."
