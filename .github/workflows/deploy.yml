@@ -1,4 +1,4 @@
-name: Deploy Mabus VPS
+name: Deploy Mabus VPS (Senha Direta)
 
 on:
   push:
@@ -8,12 +8,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Executar comandos remotos via SSH
+      - name: Deploy via SSH com Senha
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          username: "steffan"
+          password: ${{ secrets.PASSWORD }}
+          port: 2222
           script: |
             cd /opt/cidadao-terraroxa
             git fetch --all
