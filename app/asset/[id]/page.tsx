@@ -7,9 +7,13 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
   const asset = await getAsset(parseInt(id))
 
   // If asset doesn't exist, use a placeholder for demo purposes if DB is empty
-  const displayAsset = asset || {
+  const displayAsset = asset ? {
+    ...asset,
+    type: (asset as any).assetType?.name || 'Patrimônio',
+    historicalPhotoUrl: (asset.data as any)?.historicalPhotoUrl || null
+  } : {
     id: parseInt(id),
-    type: 'Poste',
+    type: 'Patrimônio',
     hashCode: `POSTE-${id}`,
     description: 'Poste de iluminação padrão.',
     historicalPhotoUrl: null

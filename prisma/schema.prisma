@@ -25,25 +25,46 @@ model User {
   @@map("users")
 }
 
+model AssetType {
+  id     Int    @id @default(autoincrement())
+  name   String @unique @db.VarChar(50) // e.g., 'Poste', 'Praça'
+  schema Json?  @db.Json // JSON Schema defining extra fields (e.g., { "hasHistory": true, "fields": [...] })
+
+  assets Asset[]
+
+  @@map("asset_types")
+}
+
 model Asset {
   id                 Int      @id @default(autoincrement())
+  assetTypeId        Int      @map("asset_type_id")
   hashCode           String   @unique @map("hash_code") @db.VarChar(50)
-  type               String   @db.VarChar(50)
   geoLat             Decimal? @map("geo_lat") @db.Decimal(10, 8)
   geoLng             Decimal? @map("geo_lng") @db.Decimal(11, 8)
   description        String?  @db.Text
-  historicalPhotoUrl String?  @map("historical_photo_url") @db.Text
 
-  actions UserAction[]
+  // Dynamic data based on AssetType schema
+  data               Json?    @db.Json
+
+  assetType AssetType    @relation(fields: [assetTypeId], references: [id])
+  actions   UserAction[]
 
   @@map("assets")
 }
 
 model GamificationRule {
   slug             String  @id @db.VarChar(50)
+  title            String? @db.VarChar(100) // Friendly name
   points           Int
-  requiresApproval Boolean @default(true) @map("requires_approval")
   icon             String? @db.VarChar(50)
+
+  // Mission Requirements
+  requiresLocation Boolean @default(true) @map("requires_location")
+  requiresPhoto    Boolean @default(true) @map("requires_photo")
+
+  // AI Integration
+  aiValidation     Boolean @default(false) @map("ai_validation")
+  aiPrompt         String? @db.Text @map("ai_prompt") // "Analyze if this photo shows a clean backyard..."
 
   actions UserAction[]
 
@@ -53,14 +74,14 @@ model GamificationRule {
 model UserAction {
   id          Int      @id @default(autoincrement())
   userId      Int      @map("user_id")
-  assetId     Int      @map("asset_id")
+  assetId     Int?     @map("asset_id") // Made nullable for general quests
   ruleSlug    String   @map("rule_slug") @db.VarChar(50)
   evidenceUrl String?  @map("evidence_url") @db.Text
   status      String?  @default("PENDING") @db.VarChar(20)
   createdAt   DateTime @default(now()) @map("created_at")
 
   user   User             @relation(fields: [userId], references: [id])
-  asset  Asset            @relation(fields: [assetId], references: [id])
+  asset  Asset?           @relation(fields: [assetId], references: [id])
   rule   GamificationRule @relation(fields: [ruleSlug], references: [slug])
   ledger PointsLedger[]
 

@@ -49,7 +49,8 @@ export async function getProfile() {
 
 export async function getAsset(id: number) {
   return await prisma.asset.findUnique({
-    where: { id }
+    where: { id },
+    include: { assetType: true }
   })
 }
 
