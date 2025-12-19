@@ -13,7 +13,7 @@ services:
     container_name: cidadao-webhook
     build: 
       context: .
-      dockerfile: legacy/Dockerfile.webhook
+      dockerfile: Dockerfile.webhook
     command: -verbose -hooks=/etc/webhook/hooks.json -hotreload
     restart: always
     user: "0:0"
