@@ -4,21 +4,16 @@ services:
     build: .
     restart: always
     ports:
-      - "127.0.0.1:5010:5000"
+      - "127.0.0.1:5010:3000"
     environment:
-      - FLASK_APP=app
-      - FLASK_DEBUG=0
-      - DB_HOST=srv466.hstgr.io
-      - DB_USER=u225637494_cidadao
-      - DB_PASS=20DKAms2
-      - DB_NAME=u225637494_cidadao
-      - SECRET_KEY=dev_secret_key_change_in_prod
+      - NODE_ENV=production
+      - DATABASE_URL=mysql://u225637494_cidadao:20DKAms2@srv466.hstgr.io:3306/u225637494_cidadao
 
   webhook:
     container_name: cidadao-webhook
     build: 
       context: .
-      dockerfile: Dockerfile.webhook
+      dockerfile: legacy/Dockerfile.webhook
     command: -verbose -hooks=/etc/webhook/hooks.json -hotreload
     restart: always
     user: "0:0"

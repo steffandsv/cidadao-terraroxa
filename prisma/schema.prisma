@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  phone      String   @unique @db.VarChar(20)
+  name       String?  @db.VarChar(255)
+  levelTitle String?  @default("Novato") @map("level_title") @db.VarChar(50)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actions      UserAction[]
+  pointsLedger PointsLedger[]
+
+  @@map("users")
+}
+
+model Asset {
+  id                 Int      @id @default(autoincrement())
+  hashCode           String   @unique @map("hash_code") @db.VarChar(50)
+  type               String   @db.VarChar(50)
+  geoLat             Decimal? @map("geo_lat") @db.Decimal(10, 8)
+  geoLng             Decimal? @map("geo_lng") @db.Decimal(11, 8)
+  description        String?  @db.Text
+  historicalPhotoUrl String?  @map("historical_photo_url") @db.Text
+
+  actions UserAction[]
+
+  @@map("assets")
+}
+
+model GamificationRule {
+  slug             String  @id @db.VarChar(50)
+  points           Int
+  requiresApproval Boolean @default(true) @map("requires_approval")
+  icon             String? @db.VarChar(50)
+
+  actions UserAction[]
+
+  @@map("gamification_rules")
+}
+
+model UserAction {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  assetId     Int      @map("asset_id")
+  ruleSlug    String   @map("rule_slug") @db.VarChar(50)
+  evidenceUrl String?  @map("evidence_url") @db.Text
+  status      String?  @default("PENDING") @db.VarChar(20)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user   User             @relation(fields: [userId], references: [id])
+  asset  Asset            @relation(fields: [assetId], references: [id])
+  rule   GamificationRule @relation(fields: [ruleSlug], references: [slug])
+  ledger PointsLedger[]
+
+  @@map("user_actions")
+}
+
+model PointsLedger {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  actionId    Int?     @map("action_id")
+  amount      Int
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user   User        @relation(fields: [userId], references: [id])
+  action UserAction? @relation(fields: [actionId], references: [id])
+
+  @@map("points_ledger")
+}

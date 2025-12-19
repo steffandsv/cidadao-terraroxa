@@ -1,19 +1,36 @@
-# CONTEXTO MESTRE DO PROJETO: "SISTEMA NERVOSO DE TERRA ROXA"
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Atue como um Arquiteto de Software Sênior e Engenheiro de Banco de Dados Especialista. Estamos iniciando o desenvolvimento de um sistema de engajamento cívico para a cidade de Terra Roxa/SP.
+## Getting Started
 
-## 1. A Filosofia do Projeto (Restrições e Estilo)
+First, run the development server:
 
-- **Público-Alvo:** População com baixa literacia digital. A interface deve ser "invisível" e extremamente simples.
-- **Plataforma:** Web App (PWA) leve. Nada de frameworks pesados que exijam download.
-- **Core Business:** Gamificação Cívica Auditável. O sistema não é apenas um "reportador de problemas", é um jogo de status social.
-- **Stack Tecnológica:** Banco de Dados Relacional (MySQL/MariaDB) robusto. O Backend será simples (PHP, Python ou Node - definiremos depois), mas o Banco é o coração.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## 2. A Lógica de Negócio (CRUCIAL)
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-O sistema de pontuação deve funcionar como um **LIVRO RAZÃO CONTÁBIL (LEDGER)**.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- **REGRA DE OURO:** Jamais armazene o "saldo atual" do usuário em uma coluna fixa na tabela de usuários. O saldo deve ser sempre calculado pela soma (`SUM`) das transações no histórico. Isso garante auditoria e evita bugs de sincronia.
-- **Flexibilidade:** O sistema deve permitir que regras mudem (ex: hoje reportar buraco vale 10, amanhã vale 20) sem alterar o histórico de quem já ganhou os pontos.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Learn More
 
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
