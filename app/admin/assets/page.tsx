@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import { Plus } from 'lucide-react'
+import AssetActions from '@/app/components/admin/AssetActions'
 
 export const dynamic = 'force-dynamic'
 
@@ -52,7 +53,7 @@ export default async function AssetsPage() {
                             <td className="px-6 py-4">#{asset.id}</td>
                             <td className="px-6 py-4">
                                 <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                                    {asset.type}
+                                    {asset.type || 'Patrimônio'}
                                 </span>
                             </td>
                             <td className="px-6 py-4 font-mono text-sm">{asset.hashCode}</td>
@@ -61,9 +62,7 @@ export default async function AssetsPage() {
                                 {Number(asset.geoLat).toFixed(4)}, {Number(asset.geoLng).toFixed(4)}
                             </td>
                             <td className="px-6 py-4">
-                                <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                    Ver QR
-                                </button>
+                                <AssetActions asset={asset} />
                             </td>
                         </tr>
                     ))

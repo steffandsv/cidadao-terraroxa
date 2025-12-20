@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import UserActions from '@/app/components/admin/UserActions'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,6 +26,7 @@ export default async function UsersPage() {
                     <th className="px-6 py-4">Nível</th>
                     <th className="px-6 py-4">Ações</th>
                     <th className="px-6 py-4">Role</th>
+                    <th className="px-6 py-4 text-right">Menu</th>
                 </tr>
             </thead>
             <tbody className="divide-y">
@@ -43,6 +45,9 @@ export default async function UsersPage() {
                             <span className={user.role === 'ADMIN' ? 'text-red-600 font-bold' : 'text-gray-600'}>
                                 {user.role}
                             </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                            <UserActions user={user} />
                         </td>
                     </tr>
                 ))}
