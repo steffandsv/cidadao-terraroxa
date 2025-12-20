@@ -74,7 +74,7 @@ model GamificationRule {
 
 model UserAction {
   id          Int      @id @default(autoincrement())
-  userId      Int      @map("user_id")
+  userId      Int?     @map("user_id")
   assetId     Int?     @map("asset_id") // Made nullable for general quests
   ruleSlug    String   @map("rule_slug") @db.VarChar(50)
   evidenceUrl String?  @map("evidence_url") @db.Text
@@ -82,7 +82,7 @@ model UserAction {
   status      String?  @default("PENDING") @db.VarChar(20)
   createdAt   DateTime @default(now()) @map("created_at")
 
-  user   User             @relation(fields: [userId], references: [id])
+  user   User?            @relation(fields: [userId], references: [id])
   asset  Asset?           @relation(fields: [assetId], references: [id])
   rule   GamificationRule @relation(fields: [ruleSlug], references: [slug])
   ledger PointsLedger[]

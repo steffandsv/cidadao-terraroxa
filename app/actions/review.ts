@@ -16,7 +16,7 @@ export async function reviewAction(actionId: number, status: 'APPROVED' | 'REJEC
         data: { status }
     })
 
-    if (status === 'APPROVED') {
+    if (status === 'APPROVED' && action.userId) {
         await prisma.pointsLedger.create({
             data: {
                 userId: action.userId,

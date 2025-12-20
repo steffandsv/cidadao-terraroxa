@@ -75,9 +75,55 @@ export async function submitAction(formData: FormData) {
   redirect('/dashboard')
 }
 
+export async function submitAnonymousReport(formData: FormData) {
+    const assetId = parseInt(formData.get('assetId') as string)
+    const problemType = formData.get('problemType') as string
+    const description = formData.get('description') as string
+    const evidenceUrl = formData.get('evidenceUrl') as string
+
+    await prisma.userAction.create({
+        data: {
+            userId: null,
+            assetId,
+            ruleSlug: 'report_fix',
+            evidenceUrl,
+            status: 'PENDING',
+            data: {
+                problemType,
+                description,
+                isAnonymous: true
+            }
+        }
+    })
+
+    redirect('/dashboard?success=report_submitted_anon')
+}
+
 export async function submitReport(formData: FormData) {
-    const session = await getSession()
-    if (!session) redirect('/')
+    let session = await getSession()
+
+    // Check if phone was provided for auto-registration
+    const phone = formData.get('phone') as string
+    if (!session && phone) {
+        // Find or Create User
+        // Simplified flow: Just ensure user exists. In real app, trigger OTP here.
+        let user = await prisma.user.findUnique({ where: { phone } })
+        if (!user) {
+            user = await prisma.user.create({
+                data: { phone, role: 'USER' }
+            })
+        }
+        // Create session-like context (In real app, we would set a cookie or redirect to OTP)
+        // For now, we link the action to this user.
+        // We will assume 'session' logic is handled by middleware/cookies mostly,
+        // but here we just need the ID to link the action.
+        session = { user: { id: user.id, phone: user.phone, role: user.role } } as any
+    }
+
+    if (!session) {
+        // If still no session (shouldn't happen if phone is provided or anonymous used), redirect
+        redirect('/')
+    }
 
     const assetId = parseInt(formData.get('assetId') as string)
     const problemType = formData.get('problemType') as string
@@ -90,7 +136,7 @@ export async function submitReport(formData: FormData) {
             userId: session.user.id,
             assetId,
             ruleSlug: 'report_fix',
-            evidenceUrl, // In real app, this would be the photo URL
+            evidenceUrl,
             status: 'PENDING',
             data: {
                 problemType,
@@ -99,6 +145,8 @@ export async function submitReport(formData: FormData) {
         }
     })
 
+    // If it was a quick-signup, maybe redirect to OTP to claim account?
+    // For this demo/task, just redirect to dashboard/success
     redirect('/dashboard?success=report_submitted')
 }
 
@@ -126,14 +174,17 @@ export async function approveAction(actionId: number) {
     })
 
     // Add points
-    await prisma.pointsLedger.create({
-        data: {
-            userId: action.userId,
-            actionId: action.id,
-            amount: action.rule.points,
-            description: `Ação: ${action.rule.slug}`
-        }
-    })
+    // If user is anonymous (userId is null), we don't award points yet.
+    if (action.userId) {
+        await prisma.pointsLedger.create({
+            data: {
+                userId: action.userId,
+                actionId: action.id,
+                amount: action.rule.points,
+                description: `Ação: ${action.rule.slug}`
+            }
+        })
+    }
 }
 
 export async function getUserReports() {

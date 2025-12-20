@@ -29,6 +29,9 @@ export const IconMap: Record<string, any> = {
 }
 
 export function DynamicIcon({ name, className }: { name: string, className?: string }) {
+    if (name.startsWith('fa-')) {
+        return <i className={`${name} ${className}`} />
+    }
     const IconComponent = IconMap[name] || Box
     return <IconComponent className={className} />
 }
