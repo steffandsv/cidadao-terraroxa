@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Lightbulb, Users, ScrollText, CheckSquare, LogOut } from 'lucide-react'
+import { LayoutDashboard, Lightbulb, Users, ScrollText, CheckSquare, LogOut, Settings } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/assets', label: 'Patrimônio', icon: Lightbulb },
+  { href: '/admin/types', label: 'Tipos de Patrimônio', icon: Settings },
   { href: '/admin/users', label: 'Usuários', icon: Users },
   { href: '/admin/quests', label: 'Missões', icon: ScrollText },
   { href: '/admin/review', label: 'Revisão', icon: CheckSquare },

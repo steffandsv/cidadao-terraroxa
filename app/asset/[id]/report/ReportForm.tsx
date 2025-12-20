@@ -57,7 +57,7 @@ export default function ReportForm({ asset }: { asset: any }) {
 
             {/* Problem Selection */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Qual é o problema?</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">O que você deseja indicar?</label>
                 <select
                     name="problemType"
                     className="w-full p-3 border rounded-xl bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
@@ -79,13 +79,13 @@ export default function ReportForm({ asset }: { asset: any }) {
             {validation.description !== 'none' && (
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Descrição Adicional {isDescriptionRequired && <span className="text-red-600">*</span>}
+                        Descrição da Indicação {isDescriptionRequired && <span className="text-red-600">*</span>}
                     </label>
                     <textarea
                         name="description"
                         rows={3}
                         className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
-                        placeholder={isDescriptionRequired ? "Descreva o problema (Obrigatório)..." : "Descreva detalhes (Opcional)..."}
+                        placeholder={isDescriptionRequired ? "Descreva a indicação (Obrigatório)..." : "Descreva detalhes (Opcional)..."}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required={isDescriptionRequired}
@@ -97,7 +97,7 @@ export default function ReportForm({ asset }: { asset: any }) {
             {validation.photo !== 'none' && (
                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Foto do Problema {isPhotoRequired && <span className="text-red-600">*</span>}
+                        Foto (Opcional) {isPhotoRequired && <span className="text-red-600">*</span>}
                     </label>
                     <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center text-gray-500 bg-white">
                         <input type="hidden" name="evidenceUrl" value="https://placehold.co/600x400/png" />
@@ -113,7 +113,7 @@ export default function ReportForm({ asset }: { asset: any }) {
                 disabled={submitting || !isValid}
                 className="w-full bg-emerald-600 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                {submitting ? 'Enviando...' : 'Enviar Ocorrência'}
+                {submitting ? 'Enviando...' : 'Enviar Indicação'}
             </button>
         </form>
     )
