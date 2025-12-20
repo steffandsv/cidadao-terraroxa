@@ -13,7 +13,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Reportar Problema</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Nova Indicação</h1>
       <p className="text-gray-600 mb-6">{asset.description} (#{asset.hashCode})</p>
 
       <ReportForm asset={asset} />

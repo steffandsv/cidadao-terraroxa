@@ -1,6 +1,7 @@
 import { getAsset, submitAction } from '@/app/actions/game'
 import { redirect } from 'next/navigation'
 import { CheckCircle, AlertTriangle } from 'lucide-react'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,17 +47,16 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
             </button>
         </form>
 
-        <form action={submitAction}>
-            <input type="hidden" name="assetId" value={displayAsset.id} />
-            <input type="hidden" name="ruleSlug" value="report_fix" />
-            <button className="w-full bg-orange-600 text-white p-6 rounded-2xl shadow-lg flex items-center gap-4 active:scale-95 transition-transform">
-                <AlertTriangle className="w-12 h-12" />
-                <div className="text-left">
-                    <div className="text-2xl font-bold">Reportar Problema</div>
-                    <div className="opacity-90">+50 Pontos (após análise)</div>
-                </div>
-            </button>
-        </form>
+        <Link
+            href={`/asset/${displayAsset.id}/report`}
+            className="w-full bg-orange-600 text-white p-6 rounded-2xl shadow-lg flex items-center gap-4 active:scale-95 transition-transform block"
+        >
+            <AlertTriangle className="w-12 h-12" />
+            <div className="text-left">
+                <div className="text-2xl font-bold">Nova Indicação</div>
+                <div className="opacity-90">+50 Pontos (após análise)</div>
+            </div>
+        </Link>
       </div>
 
       <a href="/dashboard" className="mt-8 block text-center text-gray-500 font-bold p-4">
