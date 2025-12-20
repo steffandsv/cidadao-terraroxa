@@ -75,6 +75,33 @@ export async function submitAction(formData: FormData) {
   redirect('/dashboard')
 }
 
+export async function submitReport(formData: FormData) {
+    const session = await getSession()
+    if (!session) redirect('/')
+
+    const assetId = parseInt(formData.get('assetId') as string)
+    const problemType = formData.get('problemType') as string
+    const description = formData.get('description') as string
+    const evidenceUrl = formData.get('evidenceUrl') as string
+
+    // Create the UserAction with JSON data
+    await prisma.userAction.create({
+        data: {
+            userId: session.user.id,
+            assetId,
+            ruleSlug: 'report_fix',
+            evidenceUrl, // In real app, this would be the photo URL
+            status: 'PENDING',
+            data: {
+                problemType,
+                description
+            }
+        }
+    })
+
+    redirect('/dashboard?success=report_submitted')
+}
+
 export async function getPendingActions() {
     // Only for admin - simple check for now
     // In real app, check user role
@@ -106,5 +133,19 @@ export async function approveAction(actionId: number) {
             amount: action.rule.points,
             description: `Ação: ${action.rule.slug}`
         }
+    })
+}
+
+export async function getUserReports() {
+    const session = await getSession()
+    if (!session) return []
+
+    return await prisma.userAction.findMany({
+        where: {
+            userId: session.user.id,
+            ruleSlug: 'report_fix'
+        },
+        include: { asset: true },
+        orderBy: { createdAt: 'desc' }
     })
 }

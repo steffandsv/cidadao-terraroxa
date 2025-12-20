@@ -1,8 +1,8 @@
-import { getProfile } from '@/app/actions/game'
+import { getProfile, getUserReports } from '@/app/actions/game'
 import { logout } from '@/app/actions/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Trophy, Star, MapPin, Scan } from 'lucide-react'
+import { Trophy, Star, MapPin, Scan, AlertTriangle, Clock, CheckCircle, XCircle } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,6 +10,8 @@ export default async function Dashboard() {
   try {
     const profile = await getProfile()
     if (!profile) redirect('/')
+
+    const reports = await getUserReports()
 
     return (
       <main className="min-h-screen bg-gray-50 pb-20">
@@ -63,8 +65,8 @@ export default async function Dashboard() {
           <h3 className="text-xl font-bold text-gray-800 mt-8">O que fazer agora?</h3>
 
           <div className="grid grid-cols-2 gap-4">
-              {/* Simulate Scan */}
-              <Link href="/asset/1" className="bg-white p-6 rounded-xl shadow border-b-4 border-blue-200 active:border-b-0 active:translate-y-1 transition-all flex flex-col items-center justify-center gap-2 h-40">
+              {/* Scan Link -> /scan */}
+              <Link href="/scan" className="bg-white p-6 rounded-xl shadow border-b-4 border-blue-200 active:border-b-0 active:translate-y-1 transition-all flex flex-col items-center justify-center gap-2 h-40">
                   <Scan className="w-10 h-10 text-blue-600" />
                   <span className="font-bold text-center leading-tight">Escanear QR Code</span>
               </Link>
@@ -75,9 +77,42 @@ export default async function Dashboard() {
               </Link>
           </div>
 
+          {/* My Reports */}
+          <div className="mt-8">
+             <h3 className="text-xl font-bold text-gray-800 mb-4">Meus Reportes</h3>
+             <div className="space-y-3">
+                 {reports.length === 0 ? (
+                     <p className="text-gray-500 text-center italic">Você ainda não reportou problemas.</p>
+                 ) : (
+                     reports.map((report: any) => (
+                         <div key={report.id} className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-l-blue-500 flex justify-between items-center">
+                             <div>
+                                 <p className="font-bold text-gray-800 flex items-center gap-2">
+                                     <AlertTriangle size={16} className="text-orange-500" />
+                                     {report.data?.problemType || 'Problema'}
+                                 </p>
+                                 <p className="text-xs text-gray-500">{report.asset ? `Patrimônio #${report.asset.hashCode}` : 'Geral'}</p>
+                             </div>
+                             <div className="text-right">
+                                 <span className={`px-2 py-1 rounded text-xs font-bold uppercase
+                                     ${report.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' : ''}
+                                     ${report.status === 'APPROVED' ? 'bg-green-100 text-green-700' : ''}
+                                     ${report.status === 'REJECTED' ? 'bg-red-100 text-red-700' : ''}
+                                 `}>
+                                     {report.status === 'PENDING' && 'Em Análise'}
+                                     {report.status === 'APPROVED' && 'Aprovado'}
+                                     {report.status === 'REJECTED' && 'Rejeitado'}
+                                 </span>
+                             </div>
+                         </div>
+                     ))
+                 )}
+             </div>
+          </div>
+
           {/* Recent Activity */}
           <div className="mt-8">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Histórico</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Histórico de Pontos</h3>
               <div className="space-y-3">
                   {profile.pointsLedger.slice(0, 5).map((entry: any) => (
                       <div key={entry.id} className="bg-white p-4 rounded-lg shadow-sm flex justify-between items-center">
