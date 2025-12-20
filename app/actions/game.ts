@@ -1,8 +1,9 @@
 'use server'
 
 import { prisma } from '@/lib/db'
-import { getSession } from '@/lib/auth'
+import { getSession, encrypt } from '@/lib/auth'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 
 export async function getProfile() {
   const session = await getSession()
@@ -107,17 +108,23 @@ export async function submitReport(formData: FormData) {
     const phone = formData.get('phone') as string
     if (!session && phone) {
         // Find or Create User
-        // Simplified flow: Just ensure user exists. In real app, trigger OTP here.
         let user = await prisma.user.findUnique({ where: { phone } })
         if (!user) {
             user = await prisma.user.create({
                 data: { phone, role: 'USER' }
             })
         }
-        // Create session-like context (In real app, we would set a cookie or redirect to OTP)
-        // For now, we link the action to this user.
-        // We will assume 'session' logic is handled by middleware/cookies mostly,
-        // but here we just need the ID to link the action.
+
+        // Log the user in by setting the session cookie
+        const sessionToken = await encrypt({ user: { id: user.id, phone: user.phone, name: user.name, role: user.role } })
+        const cookieStore = await cookies()
+        cookieStore.set('session', sessionToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 315360000,
+            path: '/'
+        })
+
         session = { user: { id: user.id, phone: user.phone, role: user.role } } as any
     }
 

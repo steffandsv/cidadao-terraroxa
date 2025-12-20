@@ -10,7 +10,7 @@ The database is already in sync with the Prisma schema.
 
 Running generate... (Use --skip-generate to skip the generators)
 [2K[1A[2K[GRunning generate... - Prisma Client
-[2K[1A[2K[G✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 632ms
+[2K[1A[2K[G✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 341ms
 
 ▲ Next.js 16.1.0
 - Local:         http://localhost:3000
@@ -18,4 +18,4 @@ Running generate... (Use --skip-generate to skip the generators)
 
 ✓ Starting...
 ⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
-✓ Ready in 892ms
+✓ Ready in 881ms
