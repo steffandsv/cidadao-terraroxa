@@ -14,8 +14,8 @@ async function main() {
     // We escape `schema` because it is a reserved keyword in MySQL.
     try {
       await prisma.$executeRawUnsafe(`
-        INSERT INTO asset_types (id, name, \`schema\`)
-        VALUES (1, 'Patrimônio', '{}')
+        INSERT INTO asset_types (id, name, icon, \`schema\`)
+        VALUES (1, 'Patrimônio', 'box', '{}')
         ON DUPLICATE KEY UPDATE id=id;
       `)
       console.log(' - Ensured AssetType(id=1) exists.')

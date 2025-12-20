@@ -9,6 +9,7 @@ async function main() {
   await prisma.assetType.upsert({
     where: { id: 1 },
     update: {
+      icon: 'box',
       schema: {
         problems: [
           "Lâmpada Queimada",
@@ -24,6 +25,7 @@ async function main() {
     create: {
       id: 1,
       name: 'Patrimônio',
+      icon: 'box',
       schema: {
         problems: [
           "Lâmpada Queimada",
