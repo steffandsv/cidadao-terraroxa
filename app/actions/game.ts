@@ -96,7 +96,8 @@ export async function submitAnonymousReport(formData: FormData) {
         }
     })
 
-    redirect('/dashboard?success=report_submitted_anon')
+    // Return instead of redirecting
+    return { success: true, url: '/dashboard?success=report_submitted_anon' }
 }
 
 export async function submitReport(formData: FormData) {
@@ -147,7 +148,7 @@ export async function submitReport(formData: FormData) {
 
     // If it was a quick-signup, maybe redirect to OTP to claim account?
     // For this demo/task, just redirect to dashboard/success
-    redirect('/dashboard?success=report_submitted')
+    return { success: true, url: '/dashboard?success=report_submitted' }
 }
 
 export async function getPendingActions() {

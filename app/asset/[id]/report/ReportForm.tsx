@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { submitReport, submitAnonymousReport } from '@/app/actions/game'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 // MapView must be client-side only (Leaflet requirement)
 const MapView = dynamic(() => import('@/app/components/MapView'), {
@@ -11,11 +12,11 @@ const MapView = dynamic(() => import('@/app/components/MapView'), {
 })
 
 export default function ReportForm({ asset }: { asset: any }) {
+    const router = useRouter()
     const [submitting, setSubmitting] = useState(false)
     const [selectedProblem, setSelectedProblem] = useState('')
     const [description, setDescription] = useState('')
     const [showInterstitial, setShowInterstitial] = useState(false)
-    const [phone, setPhone] = useState('')
     const [mode, setMode] = useState<'options' | 'phone'>('options') // options: login/anon, phone: enter phone
 
     // Default problems if schema is missing (fallback)
@@ -40,15 +41,25 @@ export default function ReportForm({ asset }: { asset: any }) {
         setShowInterstitial(true)
     }
 
-    // Prepare data for hidden inputs in the modal forms
-    const HiddenInputs = () => (
-        <>
-            <input type="hidden" name="assetId" value={asset.id} />
-            <input type="hidden" name="problemType" value={selectedProblem} />
-            <input type="hidden" name="description" value={description} />
-            <input type="hidden" name="evidenceUrl" value="https://placehold.co/600x400/png" />
-        </>
-    )
+    const handleAction = async (action: any, formData: FormData) => {
+        setSubmitting(true)
+        // Add hidden fields programmatically since we are not using <form action>
+        formData.append('assetId', asset.id)
+        formData.append('problemType', selectedProblem)
+        formData.append('description', description)
+        formData.append('evidenceUrl', "https://placehold.co/600x400/png")
+
+        try {
+            const result = await action(formData)
+            if (result && result.success && result.url) {
+                router.push(result.url)
+            }
+        } catch (e) {
+            console.error("Submission failed", e)
+            alert("Erro ao enviar. Tente novamente.")
+            setSubmitting(false)
+        }
+    }
 
     return (
         <>
@@ -154,13 +165,13 @@ export default function ReportForm({ asset }: { asset: any }) {
                                     Sim, quero pontuar!
                                 </button>
 
-                                <form action={submitAnonymousReport} onSubmit={() => setSubmitting(true)}>
-                                    <HiddenInputs />
+                                <form action={(formData) => handleAction(submitAnonymousReport, formData)}>
                                     <button
                                         type="submit"
-                                        className="w-full bg-gray-100 text-gray-600 p-3 rounded-xl font-semibold hover:bg-gray-200 mt-2"
+                                        disabled={submitting}
+                                        className="w-full bg-gray-100 text-gray-600 p-3 rounded-xl font-semibold hover:bg-gray-200 mt-2 disabled:opacity-50"
                                     >
-                                        Enviar Anonimamente
+                                        {submitting ? 'Enviando...' : 'Enviar Anonimamente'}
                                     </button>
                                 </form>
 
@@ -173,8 +184,7 @@ export default function ReportForm({ asset }: { asset: any }) {
                                 <p className="text-center text-gray-600 text-sm">
                                     Informe seu celular. Você poderá acompanhar o status da indicação.
                                 </p>
-                                <form action={submitReport} onSubmit={() => setSubmitting(true)} className="space-y-4">
-                                    <HiddenInputs />
+                                <form action={(formData) => handleAction(submitReport, formData)} className="space-y-4">
                                     <div>
                                         <label className="text-xs font-bold text-gray-500 uppercase">Celular</label>
                                         <input
@@ -187,9 +197,10 @@ export default function ReportForm({ asset }: { asset: any }) {
                                     </div>
                                     <button
                                         type="submit"
-                                        className="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold shadow hover:bg-emerald-700"
+                                        disabled={submitting}
+                                        className="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold shadow hover:bg-emerald-700 disabled:opacity-50"
                                     >
-                                        Cadastrar e Enviar
+                                        {submitting ? 'Cadastrando...' : 'Cadastrar e Enviar'}
                                     </button>
                                 </form>
                                  <button onClick={() => setMode('options')} className="w-full text-center text-sm text-gray-400">
