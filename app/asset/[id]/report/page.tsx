@@ -1,10 +1,10 @@
 import { getAsset } from '@/app/actions/game'
 import ReportForm from './ReportForm'
+import { getSession } from '@/lib/auth'
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  // Need to verify if include: { assetType: true } fetches the JSON schema correctly
-  // Prisma types Json fields automatically as any/JsonValue
+  const session = await getSession()
   const asset = await getAsset(parseInt(id))
 
   if (!asset) {
@@ -16,7 +16,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Nova Indicação</h1>
       <p className="text-gray-600 mb-6">{asset.description} (#{asset.hashCode})</p>
 
-      <ReportForm asset={asset} />
+      <ReportForm asset={asset} user={session?.user || null} />
     </main>
   )
 }
