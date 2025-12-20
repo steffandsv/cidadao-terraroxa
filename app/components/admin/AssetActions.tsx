@@ -1,29 +1,46 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { MoreHorizontal, Eye, Edit, Trash, QrCode } from 'lucide-react'
 import QRCodeGenerator from '@/app/components/admin/QRCodeGenerator'
+import { createPortal } from 'react-dom'
 
 export default function AssetActions({ asset }: { asset: any }) {
   const [isOpen, setIsOpen] = useState(false)
   const [showQR, setShowQR] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 })
+
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect()
+        setDropdownPos({
+            top: rect.bottom + window.scrollY,
+            left: rect.right + window.scrollX - 192 // 192px is w-48
+        })
+    }
+  }, [isOpen])
 
   return (
-    <div className="relative">
+    <>
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-gray-100 rounded-lg text-gray-600"
+        className="p-2 hover:bg-gray-100 rounded-lg text-gray-600 relative"
       >
         <MoreHorizontal size={20} />
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <>
             <div
-                className="fixed inset-0 z-10"
+                className="fixed inset-0 z-40"
                 onClick={() => setIsOpen(false)}
             ></div>
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border z-20 py-1">
+            <div
+                className="absolute bg-white rounded-lg shadow-xl border z-50 py-1 w-48 animate-in fade-in zoom-in-95 duration-100"
+                style={{ top: dropdownPos.top, left: dropdownPos.left }}
+            >
                 <button
                     onClick={() => { setShowQR(true); setIsOpen(false) }}
                     className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700"
@@ -40,12 +57,13 @@ export default function AssetActions({ asset }: { asset: any }) {
                     <Trash size={16} /> Apagar
                 </button>
             </div>
-        </>
+        </>,
+        document.body
       )}
 
       {/* QR Code Modal */}
-      {showQR && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      {showQR && createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
               <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full relative">
                   <button
                     onClick={() => setShowQR(false)}
@@ -59,8 +77,9 @@ export default function AssetActions({ asset }: { asset: any }) {
                   </div>
                   <p className="text-center text-gray-500 text-sm">{asset.description}</p>
               </div>
-          </div>
+          </div>,
+          document.body
       )}
-    </div>
+    </>
   )
 }

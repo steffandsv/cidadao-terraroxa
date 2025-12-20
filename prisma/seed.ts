@@ -5,13 +5,36 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Seeding Asset Types...')
 
+  // Update default AssetType with 'problems' list in schema
   await prisma.assetType.upsert({
     where: { id: 1 },
-    update: {},
+    update: {
+      schema: {
+        problems: [
+          "Lâmpada Queimada",
+          "Luz Intermitente",
+          "Fios Soltos/Baixos",
+          "Poste Caído/Torto",
+          "Corrosão na Base",
+          "Lixo/Entulho Próximo",
+          "Outro"
+        ]
+      }
+    },
     create: {
       id: 1,
       name: 'Patrimônio',
-      schema: {}
+      schema: {
+        problems: [
+          "Lâmpada Queimada",
+          "Luz Intermitente",
+          "Fios Soltos/Baixos",
+          "Poste Caído/Torto",
+          "Corrosão na Base",
+          "Lixo/Entulho Próximo",
+          "Outro"
+        ]
+      }
     }
   })
 

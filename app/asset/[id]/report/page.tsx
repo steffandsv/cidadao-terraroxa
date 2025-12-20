@@ -3,6 +3,8 @@ import ReportForm from './ReportForm'
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  // Need to verify if include: { assetType: true } fetches the JSON schema correctly
+  // Prisma types Json fields automatically as any/JsonValue
   const asset = await getAsset(parseInt(id))
 
   if (!asset) {

@@ -12,6 +12,20 @@ const MapView = dynamic(() => import('@/app/components/MapView'), {
 
 export default function ReportForm({ asset }: { asset: any }) {
     const [submitting, setSubmitting] = useState(false)
+    const [selectedProblem, setSelectedProblem] = useState('')
+    const [description, setDescription] = useState('')
+
+    // Default problems if schema is missing (fallback)
+    const defaultProblems = ["Lâmpada Queimada", "Fios Soltos", "Poste Caído", "Outro"]
+
+    // Safely access problems from asset type schema
+    const schema = asset.assetType?.schema as any
+    const problems = (schema?.problems && Array.isArray(schema.problems)) ? schema.problems : defaultProblems
+
+    const isOther = selectedProblem === 'Outro'
+
+    // Validate: if "Outro", description is required
+    const isValid = selectedProblem && (!isOther || description.trim().length > 0)
 
     return (
         <form action={submitReport} onSubmit={() => setSubmitting(true)} className="space-y-6">
@@ -36,25 +50,33 @@ export default function ReportForm({ asset }: { asset: any }) {
             {/* Problem Selection */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Qual é o problema?</label>
-                <select name="problemType" className="w-full p-3 border rounded-xl bg-white" required>
+                <select
+                    name="problemType"
+                    className="w-full p-3 border rounded-xl bg-white"
+                    required
+                    value={selectedProblem}
+                    onChange={(e) => setSelectedProblem(e.target.value)}
+                >
                     <option value="">Selecione...</option>
-                    <option value="Lâmpada Queimada">Lâmpada Queimada</option>
-                    <option value="Fios Soltos">Fios Soltos</option>
-                    <option value="Poste Caído">Poste Caído/Torto</option>
-                    <option value="Lixo/Entulho">Lixo/Entulho</option>
-                    <option value="Depredação">Depredação</option>
-                    <option value="Outro">Outro</option>
+                    {problems.map((p: string) => (
+                        <option key={p} value={p}>{p}</option>
+                    ))}
                 </select>
             </div>
 
             {/* Description */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Descrição Adicional</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Descrição Adicional {isOther && <span className="text-red-600">*</span>}
+                </label>
                 <textarea
                     name="description"
                     rows={3}
                     className="w-full p-3 border rounded-xl"
-                    placeholder="Descreva detalhes..."
+                    placeholder={isOther ? "Descreva o problema (Obrigatório)..." : "Descreva detalhes (Opcional)..."}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required={isOther}
                 ></textarea>
             </div>
 
@@ -70,8 +92,8 @@ export default function ReportForm({ asset }: { asset: any }) {
 
             <button
                 type="submit"
-                disabled={submitting}
-                className="w-full bg-blue-800 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-blue-900 active:scale-95 transition disabled:opacity-70 disabled:cursor-not-allowed"
+                disabled={submitting || !isValid}
+                className="w-full bg-blue-800 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-blue-900 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {submitting ? 'Enviando...' : 'Enviar Ocorrência'}
             </button>
