@@ -18,82 +18,100 @@ export default function ReportForm({ asset }: { asset: any }) {
     // Default problems if schema is missing (fallback)
     const defaultProblems = ["Lâmpada Queimada", "Fios Soltos", "Poste Caído", "Outro"]
 
-    // Safely access problems from asset type schema
+    // Safely access schema
     const schema = asset.assetType?.schema as any
     const problems = (schema?.problems && Array.isArray(schema.problems)) ? schema.problems : defaultProblems
+    const validation = schema?.validation || { photo: "required", location: true, description: "optional" }
 
     const isOther = selectedProblem === 'Outro'
 
-    // Validate: if "Outro", description is required
-    const isValid = selectedProblem && (!isOther || description.trim().length > 0)
+    // Validation Logic
+    const isDescriptionRequired = validation.description === "required" || isOther
+    const isPhotoRequired = validation.photo === "required"
+
+    // Form validity check
+    const isValid = selectedProblem && (!isDescriptionRequired || description.trim().length > 0)
 
     return (
         <form action={submitReport} onSubmit={() => setSubmitting(true)} className="space-y-6">
             <input type="hidden" name="assetId" value={asset.id} />
 
             {/* Location Confirmation */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border">
-                <h3 className="font-bold mb-2">Confirmar Localização</h3>
-                <div className="h-48 rounded-lg overflow-hidden border mb-2">
-                    {asset.geoLat && asset.geoLng ? (
-                        <MapView lat={Number(asset.geoLat)} lng={Number(asset.geoLng)} />
-                    ) : (
-                        <div className="h-full flex items-center justify-center bg-gray-100 text-gray-500">Sem localização definida</div>
-                    )}
+            {validation.location !== false && (
+                 <div className="bg-white p-4 rounded-xl shadow-sm border">
+                    <h3 className="font-bold mb-2">Confirmar Localização</h3>
+                    <div className="h-48 rounded-lg overflow-hidden border mb-2">
+                        {asset.geoLat && asset.geoLng ? (
+                            <MapView lat={Number(asset.geoLat)} lng={Number(asset.geoLng)} />
+                        ) : (
+                            <div className="h-full flex items-center justify-center bg-gray-100 text-gray-500">Sem localização definida</div>
+                        )}
+                    </div>
+                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                        <input type="checkbox" required className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500" />
+                        Confirmo que estou neste local
+                    </label>
                 </div>
-                <label className="flex items-center gap-2 text-sm text-gray-700">
-                    <input type="checkbox" required className="w-4 h-4 text-blue-600 rounded" />
-                    Confirmo que estou neste local
-                </label>
-            </div>
+            )}
+
 
             {/* Problem Selection */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Qual é o problema?</label>
                 <select
                     name="problemType"
-                    className="w-full p-3 border rounded-xl bg-white"
+                    className="w-full p-3 border rounded-xl bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
                     required
                     value={selectedProblem}
                     onChange={(e) => setSelectedProblem(e.target.value)}
                 >
                     <option value="">Selecione...</option>
-                    {problems.map((p: string) => (
-                        <option key={p} value={p}>{p}</option>
-                    ))}
+                    {problems.map((p: string | {id: string, label: string}) => {
+                        // Support both ["String"] and [{id: "x", label: "X"}]
+                        const value = typeof p === 'string' ? p : p.id
+                        const label = typeof p === 'string' ? p : p.label
+                        return <option key={value} value={value}>{label}</option>
+                    })}
                 </select>
             </div>
 
             {/* Description */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Descrição Adicional {isOther && <span className="text-red-600">*</span>}
-                </label>
-                <textarea
-                    name="description"
-                    rows={3}
-                    className="w-full p-3 border rounded-xl"
-                    placeholder={isOther ? "Descreva o problema (Obrigatório)..." : "Descreva detalhes (Opcional)..."}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required={isOther}
-                ></textarea>
-            </div>
+            {validation.description !== 'none' && (
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Descrição Adicional {isDescriptionRequired && <span className="text-red-600">*</span>}
+                    </label>
+                    <textarea
+                        name="description"
+                        rows={3}
+                        className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                        placeholder={isDescriptionRequired ? "Descreva o problema (Obrigatório)..." : "Descreva detalhes (Opcional)..."}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        required={isDescriptionRequired}
+                    ></textarea>
+                </div>
+            )}
 
             {/* Photo (Mock) */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Foto (Opcional)</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center text-gray-500 bg-white">
-                    <input type="hidden" name="evidenceUrl" value="https://placehold.co/600x400/png" />
-                    <p>📸 Simulação de Upload de Câmera</p>
-                    <p className="text-xs mt-1">(Em produção, abriria a câmera nativa)</p>
+            {validation.photo !== 'none' && (
+                 <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Foto do Problema {isPhotoRequired && <span className="text-red-600">*</span>}
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center text-gray-500 bg-white">
+                        <input type="hidden" name="evidenceUrl" value="https://placehold.co/600x400/png" />
+                        <p>📸 Simulação de Upload de Câmera</p>
+                        <p className="text-xs mt-1">{isPhotoRequired ? '(Obrigatória)' : '(Opcional)'}</p>
+                    </div>
                 </div>
-            </div>
+            )}
+
 
             <button
                 type="submit"
                 disabled={submitting || !isValid}
-                className="w-full bg-blue-800 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-blue-900 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-emerald-600 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {submitting ? 'Enviando...' : 'Enviar Ocorrência'}
             </button>

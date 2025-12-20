@@ -28,6 +28,7 @@ model User {
 model AssetType {
   id     Int    @id @default(autoincrement())
   name   String @unique @db.VarChar(50) // e.g., 'Poste', 'Praça'
+  icon   String? @db.VarChar(50) // e.g., 'lucide-lightbulb', 'lucide-tree'
   schema Json?  @db.Json // JSON Schema defining extra fields (e.g., { "hasHistory": true, "fields": [...] })
 
   assets Asset[]

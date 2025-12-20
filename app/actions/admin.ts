@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 
 export async function createAssetType(formData: FormData) {
     const name = formData.get('name') as string
+    const icon = formData.get('icon') as string
     // Simplified schema creation for now. In a real app, we'd have a UI builder.
     // For now we just default to allowing a "historical" text field or similar.
     // Or we can parse a JSON string if we provide a textarea.
@@ -20,6 +21,7 @@ export async function createAssetType(formData: FormData) {
     await prisma.assetType.create({
         data: {
             name,
+            icon,
             schema
         }
     })
