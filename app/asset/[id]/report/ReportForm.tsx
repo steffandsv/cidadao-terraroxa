@@ -11,7 +11,7 @@ const MapView = dynamic(() => import('@/app/components/MapView'), {
   loading: () => <div className="h-48 bg-gray-200 animate-pulse flex items-center justify-center">Carregando Mapa...</div>
 })
 
-export default function ReportForm({ asset }: { asset: any }) {
+export default function ReportForm({ asset, user }: { asset: any, user: any }) {
     const router = useRouter()
     const [submitting, setSubmitting] = useState(false)
     const [selectedProblem, setSelectedProblem] = useState('')
@@ -36,18 +36,34 @@ export default function ReportForm({ asset }: { asset: any }) {
     // Form validity check
     const isValid = selectedProblem && (!isDescriptionRequired || description.trim().length > 0)
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        // If user is already logged in, skip interstitial and submit directly
+        if (user) {
+            const formData = new FormData()
+            formData.append('assetId', asset.id)
+            formData.append('problemType', selectedProblem)
+            formData.append('description', description)
+            formData.append('evidenceUrl', "https://placehold.co/600x400/png")
+            // Pass 'phone' if we had it, but for existing user the session handles it.
+            // Wait, existing 'submitReport' checks for phone to CREATE user.
+            // If logged in, 'submitReport' uses session.
+            await handleAction(submitReport, formData)
+            return
+        }
+
+        // Show interstitial if not logged in
         setShowInterstitial(true)
     }
 
     const handleAction = async (action: any, formData: FormData) => {
         setSubmitting(true)
-        // Add hidden fields programmatically since we are not using <form action>
-        formData.append('assetId', asset.id)
-        formData.append('problemType', selectedProblem)
-        formData.append('description', description)
-        formData.append('evidenceUrl', "https://placehold.co/600x400/png")
+        // Ensure hidden fields are appended if not present
+        if (!formData.has('assetId')) formData.append('assetId', asset.id)
+        if (!formData.has('problemType')) formData.append('problemType', selectedProblem)
+        if (!formData.has('description')) formData.append('description', description)
+        if (!formData.has('evidenceUrl')) formData.append('evidenceUrl', "https://placehold.co/600x400/png")
 
         try {
             const result = await action(formData)
@@ -141,12 +157,12 @@ export default function ReportForm({ asset }: { asset: any }) {
                     disabled={submitting || !isValid}
                     className="w-full bg-emerald-600 text-white p-4 rounded-xl font-bold shadow-lg hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Enviar Indicação
+                    {submitting ? 'Enviando...' : 'Enviar Indicação'}
                 </button>
             </form>
 
             {/* Interstitial Modal */}
-            {showInterstitial && (
+            {showInterstitial && !user && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
                         <h2 className="text-xl font-bold text-center text-gray-800">Finalizar Indicação</h2>
