@@ -82,7 +82,7 @@ export async function submitAnonymousReport(formData: FormData) {
     const description = formData.get('description') as string
     const evidenceUrl = formData.get('evidenceUrl') as string
 
-    await prisma.userAction.create({
+    const action = await prisma.userAction.create({
         data: {
             userId: null,
             assetId,
@@ -97,8 +97,8 @@ export async function submitAnonymousReport(formData: FormData) {
         }
     })
 
-    // Return URL to Home instead of Dashboard to avoid Auth redirect loop/error
-    return { success: true, url: '/?success=report_submitted_anon' }
+    // Return URL to dedicated success page
+    return { success: true, url: `/report/success/${action.id}` }
 }
 
 export async function submitReport(formData: FormData) {
