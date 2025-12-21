@@ -9,7 +9,15 @@ export default async function ReviewPage() {
     try {
         pendingActions = await prisma.userAction.findMany({
             where: { status: 'PENDING' },
-            include: { user: true, rule: true, asset: true },
+            include: {
+                user: true,
+                rule: true,
+                asset: {
+                    include: {
+                        assetType: true
+                    }
+                }
+            },
             orderBy: { createdAt: 'desc' }
         })
     } catch(e) { console.error(e) }
@@ -43,7 +51,7 @@ export default async function ReviewPage() {
                                     {action.asset ? `${action.asset.assetType?.name || 'Patrimônio'} #${action.asset.hashCode}` : 'Geral'}
                                 </p>
                                 <p className="text-xs text-gray-400 mb-4">
-                                    Por: {action.user.name || action.user.phone}
+                                    Por: {action.user?.name || action.user?.phone || 'Anônimo'}
                                 </p>
 
                                 {/* Display Report Details if available */}
