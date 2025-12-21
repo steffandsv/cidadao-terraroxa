@@ -100,10 +100,12 @@ export default async function Dashboard() {
                                      ${report.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' : ''}
                                      ${report.status === 'APPROVED' ? 'bg-green-100 text-green-700' : ''}
                                      ${report.status === 'REJECTED' ? 'bg-red-100 text-red-700' : ''}
+                                     ${!['PENDING', 'APPROVED', 'REJECTED'].includes(report.status) ? 'bg-blue-100 text-blue-700' : ''}
                                  `}>
                                                 {report.status === 'PENDING' && 'Em Análise'}
                                                 {report.status === 'APPROVED' && 'Aprovado'}
                                                 {report.status === 'REJECTED' && 'Rejeitado'}
+                                                {!['PENDING', 'APPROVED', 'REJECTED'].includes(report.status) && report.status}
                                             </span>
                                         </div>
                                     </div>
