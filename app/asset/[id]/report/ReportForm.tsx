@@ -71,7 +71,7 @@ export default function ReportForm({ asset, user }: { asset: any, user?: any }) 
 
         try {
             const result = await action(formData)
-            if (result && result.success && result.url) {
+            if (result && result.url) {
                 router.push(result.url)
             }
         } catch (e) {

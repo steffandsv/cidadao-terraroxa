@@ -57,7 +57,7 @@ export async function getAsset(id: number) {
 
 export async function submitAction(formData: FormData) {
   const session = await getSession()
-  if (!session) redirect('/')
+  if (!session) return { success: false, url: '/' }
 
   const assetId = parseInt(formData.get('assetId') as string)
   const ruleSlug = formData.get('ruleSlug') as string
@@ -73,7 +73,7 @@ export async function submitAction(formData: FormData) {
     }
   })
 
-  redirect('/dashboard')
+  return { success: true, url: '/dashboard' }
 }
 
 export async function submitAnonymousReport(formData: FormData) {
@@ -129,8 +129,8 @@ export async function submitReport(formData: FormData) {
     }
 
     if (!session) {
-        // If still no session (shouldn't happen if phone is provided or anonymous used), redirect
-        redirect('/')
+        // If still no session (shouldn't happen if phone is provided or anonymous used), return url
+        return { success: false, url: '/' }
     }
 
     const assetId = parseInt(formData.get('assetId') as string)
