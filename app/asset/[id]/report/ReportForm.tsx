@@ -7,17 +7,17 @@ import { useRouter } from 'next/navigation'
 
 // MapView must be client-side only (Leaflet requirement)
 const MapView = dynamic(() => import('@/app/components/MapView'), {
-  ssr: false,
-  loading: () => <div className="h-48 bg-gray-200 animate-pulse flex items-center justify-center">Carregando Mapa...</div>
+    ssr: false,
+    loading: () => <div className="h-48 bg-gray-200 animate-pulse flex items-center justify-center">Carregando Mapa...</div>
 })
 
-export default function ReportForm({ asset }: { asset: any }) {
+export default function ReportForm({ asset, user }: { asset: any, user?: any }) {
     const router = useRouter()
     const [submitting, setSubmitting] = useState(false)
     const [selectedProblem, setSelectedProblem] = useState('')
     const [description, setDescription] = useState('')
     const [showInterstitial, setShowInterstitial] = useState(false)
-    const [mode, setMode] = useState<'options' | 'phone'>('options') // options: login/anon, phone: enter phone
+
 
     // Default problems if schema is missing (fallback)
     const defaultProblems = ["Lâmpada Queimada", "Fios Soltos", "Poste Caído", "Outro"]
@@ -38,7 +38,27 @@ export default function ReportForm({ asset }: { asset: any }) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        setShowInterstitial(true)
+        if (user) {
+            const formData = new FormData()
+            formData.append('assetId', asset.id)
+            formData.append('problemType', selectedProblem)
+            formData.append('description', description)
+            formData.append('evidenceUrl', "https://placehold.co/600x400/png")
+            handleAction(submitReport, formData)
+        } else {
+            setShowInterstitial(true)
+        }
+    }
+
+    const handleLoginRedirect = () => {
+        const reportData = {
+            assetId: asset.id,
+            problemType: selectedProblem,
+            description: description,
+            evidenceUrl: "https://placehold.co/600x400/png"
+        }
+        localStorage.setItem('pendingReport', JSON.stringify(reportData))
+        router.push('/')
     }
 
     const handleAction = async (action: any, formData: FormData) => {
@@ -94,7 +114,7 @@ export default function ReportForm({ asset }: { asset: any }) {
                         onChange={(e) => setSelectedProblem(e.target.value)}
                     >
                         <option value="">Selecione...</option>
-                        {problems.map((p: string | {id: string, label: string}) => {
+                        {problems.map((p: string | { id: string, label: string }) => {
                             // Support both ["String"] and [{id: "x", label: "X"}]
                             const value = typeof p === 'string' ? p : p.id
                             const label = typeof p === 'string' ? p : p.label
@@ -151,63 +171,33 @@ export default function ReportForm({ asset }: { asset: any }) {
                     <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
                         <h2 className="text-xl font-bold text-center text-gray-800">Finalizar Indicação</h2>
 
-                        {mode === 'options' ? (
-                            <div className="space-y-3">
-                                <p className="text-center text-gray-600 text-sm">
-                                    Gostaria de acumular <span className="font-bold text-emerald-600">Pontos Cidadão</span> com esta indicação?
-                                </p>
+                        <div className="space-y-3">
+                            <p className="text-center text-gray-600 text-sm">
+                                Gostaria de acumular <span className="font-bold text-emerald-600">Pontos Cidadão</span> com esta indicação?
+                            </p>
 
+                            <button
+                                onClick={handleLoginRedirect}
+                                className="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-700"
+                            >
+                                <i className="fa-solid fa-trophy"></i>
+                                Sim, quero pontuar!
+                            </button>
+
+                            <form action={(formData) => handleAction(submitAnonymousReport, formData)}>
                                 <button
-                                    onClick={() => setMode('phone')}
-                                    className="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-700"
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="w-full bg-gray-100 text-gray-600 p-3 rounded-xl font-semibold hover:bg-gray-200 mt-2 disabled:opacity-50"
                                 >
-                                    <i className="fa-solid fa-trophy"></i>
-                                    Sim, quero pontuar!
+                                    {submitting ? 'Enviando...' : 'Enviar Anonimamente'}
                                 </button>
+                            </form>
 
-                                <form action={(formData) => handleAction(submitAnonymousReport, formData)}>
-                                    <button
-                                        type="submit"
-                                        disabled={submitting}
-                                        className="w-full bg-gray-100 text-gray-600 p-3 rounded-xl font-semibold hover:bg-gray-200 mt-2 disabled:opacity-50"
-                                    >
-                                        {submitting ? 'Enviando...' : 'Enviar Anonimamente'}
-                                    </button>
-                                </form>
-
-                                <button onClick={() => setShowInterstitial(false)} className="w-full text-center text-sm text-gray-400 mt-2">
-                                    Voltar
-                                </button>
-                            </div>
-                        ) : (
-                             <div className="space-y-4">
-                                <p className="text-center text-gray-600 text-sm">
-                                    Informe seu celular. Você poderá acompanhar o status da indicação.
-                                </p>
-                                <form action={(formData) => handleAction(submitReport, formData)} className="space-y-4">
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase">Celular</label>
-                                        <input
-                                            name="phone"
-                                            type="tel"
-                                            placeholder="(11) 99999-9999"
-                                            className="w-full text-lg p-3 border rounded-xl font-mono text-center"
-                                            required
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        disabled={submitting}
-                                        className="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold shadow hover:bg-emerald-700 disabled:opacity-50"
-                                    >
-                                        {submitting ? 'Cadastrando...' : 'Cadastrar e Enviar'}
-                                    </button>
-                                </form>
-                                 <button onClick={() => setMode('options')} className="w-full text-center text-sm text-gray-400">
-                                    Voltar
-                                </button>
-                             </div>
-                        )}
+                            <button onClick={() => setShowInterstitial(false)} className="w-full text-center text-sm text-gray-400 mt-2">
+                                Voltar
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
