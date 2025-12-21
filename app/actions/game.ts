@@ -97,8 +97,8 @@ export async function submitAnonymousReport(formData: FormData) {
         }
     })
 
-    // Return instead of redirecting
-    return { success: true, url: '/dashboard?success=report_submitted_anon' }
+    // Return URL to Home instead of Dashboard to avoid Auth redirect loop/error
+    return { success: true, url: '/?success=report_submitted_anon' }
 }
 
 export async function submitReport(formData: FormData) {
