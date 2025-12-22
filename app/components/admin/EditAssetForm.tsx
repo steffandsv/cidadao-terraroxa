@@ -129,12 +129,14 @@ export default function EditAssetForm({ asset, types }: { asset: any, types: any
                     <h2 className="font-semibold text-lg">Localização Geográfica</h2>
                     <div className="h-[400px] rounded-lg overflow-hidden border">
                          <MapPicker
-                            position={[formData.geoLat, formData.geoLng]}
-                            setPosition={(pos) => {
+                            initialLat={formData.geoLat || -24.2323}
+                            initialLng={formData.geoLng || -53.8407}
+                            markerPosition={formData.geoLat && formData.geoLng ? [formData.geoLat, formData.geoLng] : null}
+                            onSelect={(lat, lng) => {
                                 setFormData(prev => ({
                                     ...prev,
-                                    geoLat: pos[0],
-                                    geoLng: pos[1]
+                                    geoLat: lat,
+                                    geoLng: lng
                                 }))
                             }}
                         />
