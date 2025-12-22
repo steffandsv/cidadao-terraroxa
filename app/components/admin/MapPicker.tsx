@@ -17,8 +17,8 @@ const customIcon = new L.Icon({
     iconAnchor: [12, 41],
 })
 
-function LocationMarker({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) {
-  const [position, setPosition] = useState<L.LatLng | null>(null)
+function LocationMarker({ onLocationSelect, initialPosition }: { onLocationSelect: (lat: number, lng: number) => void, initialPosition: L.LatLng | null }) {
+  const [position, setPosition] = useState<L.LatLng | null>(initialPosition)
 
   useMapEvents({
     click(e) {
@@ -26,6 +26,11 @@ function LocationMarker({ onLocationSelect }: { onLocationSelect: (lat: number, 
       onLocationSelect(e.latlng.lat, e.latlng.lng)
     },
   })
+
+  // If initialPosition changes (e.g. from props), we might want to update local state,
+  // but usually for edit form it's stable.
+  // However, if we want to support external updates we could add a useEffect.
+  // For now, simple initialization is enough for the "Edit" use case.
 
   return position === null ? null : (
     <Marker position={position} icon={customIcon} />
@@ -37,11 +42,14 @@ interface MapPickerProps {
     initialLat?: number
     initialLng?: number
     initialZoom?: number
+    markerPosition?: [number, number] | null
 }
 
-export default function MapPicker({ onSelect, initialLat, initialLng, initialZoom }: MapPickerProps) {
+export default function MapPicker({ onSelect, initialLat, initialLng, initialZoom, markerPosition }: MapPickerProps) {
     const center: [number, number] = initialLat && initialLng ? [initialLat, initialLng] : [-24.2323, -53.8407]
     const zoom = initialZoom || 13
+
+    const initialMarkerPos = markerPosition ? new L.LatLng(markerPosition[0], markerPosition[1]) : null
 
     return (
         <MapContainer center={center} zoom={zoom} scrollWheelZoom={true} style={{ height: '400px', width: '100%', borderRadius: '0.5rem' }}>
@@ -49,7 +57,7 @@ export default function MapPicker({ onSelect, initialLat, initialLng, initialZoo
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <LocationMarker onLocationSelect={onSelect} />
+            <LocationMarker onLocationSelect={onSelect} initialPosition={initialMarkerPos} />
         </MapContainer>
     )
 }
