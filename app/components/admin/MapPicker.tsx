@@ -36,15 +36,15 @@ interface MapPickerProps {
     onSelect: (lat: number, lng: number) => void
     initialLat?: number
     initialLng?: number
+    initialZoom?: number
 }
 
-export default function MapPicker({ onSelect, initialLat, initialLng }: MapPickerProps) {
-    // Terra Roxa coordinates (approximate center, or just Brazil)
-    // -24.2323, -53.8407 (Terra Roxa, PR)
+export default function MapPicker({ onSelect, initialLat, initialLng, initialZoom }: MapPickerProps) {
     const center: [number, number] = initialLat && initialLng ? [initialLat, initialLng] : [-24.2323, -53.8407]
+    const zoom = initialZoom || 13
 
     return (
-        <MapContainer center={center} zoom={13} scrollWheelZoom={true} style={{ height: '400px', width: '100%', borderRadius: '0.5rem' }}>
+        <MapContainer center={center} zoom={zoom} scrollWheelZoom={true} style={{ height: '400px', width: '100%', borderRadius: '0.5rem' }}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

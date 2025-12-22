@@ -88,12 +88,19 @@ export default async function Dashboard() {
                             ) : (
                                 reports.map((report: any) => (
                                     <div key={report.id} className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-l-blue-500 flex justify-between items-center">
-                                        <div>
+                                        <div className="flex-1">
                                             <p className="font-bold text-gray-800 flex items-center gap-2">
                                                 <AlertTriangle size={16} className="text-orange-500" />
                                                 {report.data?.problemType || 'Problema'}
                                             </p>
-                                            <p className="text-xs text-gray-500">{report.asset ? `Patrimônio #${report.asset.hashCode}` : 'Geral'}</p>
+                                            <p className="text-xs text-gray-500 mb-1">{report.asset ? `Patrimônio #${report.asset.hashCode}` : 'Geral'}</p>
+
+                                            {/* Admin Feedback */}
+                                            {report.feedback && (
+                                                <div className="mt-2 bg-blue-50 border border-blue-100 p-2 rounded text-xs text-blue-800">
+                                                    <span className="font-bold">Resposta da Prefeitura:</span> {report.feedback}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="text-right">
                                             <span className={`px-2 py-1 rounded text-xs font-bold uppercase

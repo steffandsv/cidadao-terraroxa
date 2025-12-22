@@ -19,13 +19,21 @@ export default async function AssetsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">Gerenciar Postes e Ativos</h1>
-        <Link
-            href="/admin/assets/create"
-            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-        >
-            <Plus size={20} />
-            Novo Ativo
-        </Link>
+        <div className="flex gap-2">
+            <Link
+                href="/admin/types"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            >
+                Tipos de Patrimônio
+            </Link>
+            <Link
+                href="/admin/assets/create"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            >
+                <Plus size={20} />
+                Novo Ativo
+            </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">

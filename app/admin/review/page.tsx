@@ -1,12 +1,16 @@
 import { prisma } from '@/lib/db'
 import ReviewManagement from './components/ReviewManagement'
+import { getMapConfig } from '@/app/actions/config'
 
 export const dynamic = 'force-dynamic'
 
 export default async function ReviewPage() {
     let reviews: any[] = []
     let assetTypes: any[] = []
+    let mapConfig = { lat: -21.0365, lng: -48.5135, zoom: 13 }
     try {
+        mapConfig = await getMapConfig()
+
         const rawReviews = await prisma.userAction.findMany({
             // Removed status filter to show all history
             include: {
@@ -42,7 +46,7 @@ export default async function ReviewPage() {
                 <p className="text-gray-500">Visualize e gerencie os reportes dos cidadãos.</p>
             </div>
 
-            <ReviewManagement initialReviews={reviews} assetTypes={assetTypes} />
+            <ReviewManagement initialReviews={reviews} assetTypes={assetTypes} mapConfig={mapConfig} />
         </div>
     )
 }

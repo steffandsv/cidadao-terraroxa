@@ -86,8 +86,16 @@ model UserAction {
   asset  Asset?           @relation(fields: [assetId], references: [id])
   rule   GamificationRule @relation(fields: [ruleSlug], references: [slug])
   ledger PointsLedger[]
+  feedback String? @db.Text
 
   @@map("user_actions")
+}
+
+model Config {
+  key   String @id @db.VarChar(50)
+  value Json   @db.Json
+
+  @@map("configs")
 }
 
 model PointsLedger {

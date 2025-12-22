@@ -30,33 +30,32 @@ const icons = {
     DEFAULT: createIcon('#3B82F6')   // Blue for others
 };
 
-function MapController({ center }: { center: [number, number] }) {
+function MapController({ center, zoom }: { center: [number, number], zoom: number }) {
     const map = useMap();
     useEffect(() => {
-        map.setView(center, map.getZoom());
-    }, [center, map]);
+        map.setView(center, zoom);
+    }, [center, zoom, map]);
     return null;
 }
 
-export default function ReviewMap({ reviews, onSelectReview, selectedId }: { reviews: any[], onSelectReview: (r: any) => void, selectedId: number | null }) {
+export default function ReviewMap({ reviews, onSelectReview, selectedId, defaultCenter, defaultZoom }: { reviews: any[], onSelectReview: (r: any) => void, selectedId: number | null, defaultCenter: { lat: number, lng: number }, defaultZoom: number }) {
 
     useEffect(() => {
         fixLeafletIcons()
     }, [])
 
-    // Calculate center based on reviews or default to Terra Roxa
-    const defaultCenter: [number, number] = [-21.0365, -48.5135]
-
     // If selected review has location, center on it
     const selectedReview = reviews.find(r => r.id === selectedId)
-    const center = selectedReview?.asset?.geoLat && selectedReview?.asset?.geoLng
-        ? [Number(selectedReview.asset.geoLat), Number(selectedReview.asset.geoLng)] as [number, number]
-        : defaultCenter
+    const center: [number, number] = selectedReview?.asset?.geoLat && selectedReview?.asset?.geoLng
+        ? [Number(selectedReview.asset.geoLat), Number(selectedReview.asset.geoLng)]
+        : [defaultCenter.lat, defaultCenter.lng]
+
+    const zoom = selectedReview ? 18 : defaultZoom
 
     return (
         <MapContainer
             center={center}
-            zoom={13}
+            zoom={zoom}
             style={{ height: '100%', width: '100%' }}
         >
             <TileLayer
@@ -79,7 +78,7 @@ export default function ReviewMap({ reviews, onSelectReview, selectedId }: { rev
                     </Marker>
                 )
             })}
-            <MapController center={center} />
+            <MapController center={center} zoom={zoom} />
         </MapContainer>
     )
 }

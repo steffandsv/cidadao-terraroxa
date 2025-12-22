@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
-export async function reviewAction(actionId: number, status: string) {
+export async function reviewAction(actionId: number, status: string, feedback?: string) {
     const action = await prisma.userAction.findUnique({
         where: { id: actionId },
         include: { rule: true }
@@ -19,7 +19,7 @@ export async function reviewAction(actionId: number, status: string) {
 
     await prisma.userAction.update({
         where: { id: actionId },
-        data: { status }
+        data: { status, feedback }
     })
 
     if (isApproving && !wasApproved && action.userId) {

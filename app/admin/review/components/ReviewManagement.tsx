@@ -11,7 +11,7 @@ const ReviewMap = dynamic(() => import('./ReviewMap'), {
     loading: () => <div className="w-full h-full bg-gray-100 animate-pulse flex items-center justify-center text-gray-400">Carregando Mapa...</div>
 })
 
-export default function ReviewManagement({ initialReviews, assetTypes }: { initialReviews: any[], assetTypes: any[] }) {
+export default function ReviewManagement({ initialReviews, assetTypes, mapConfig }: { initialReviews: any[], assetTypes: any[], mapConfig: any }) {
     const [reviews, setReviews] = useState(initialReviews)
     const [filterDate, setFilterDate] = useState('')
     const [filterType, setFilterType] = useState('ALL')
@@ -47,13 +47,13 @@ export default function ReviewManagement({ initialReviews, assetTypes }: { initi
     }, [reviews])
 
     // Handle Status Change
-    const handleStatusChange = async (reviewId: number, newStatus: string) => {
+    const handleStatusChange = async (reviewId: number, newStatus: string, feedback: string) => {
         setIsUpdating(true)
         try {
-            await reviewAction(reviewId, newStatus)
-            setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, status: newStatus } : r))
+            await reviewAction(reviewId, newStatus, feedback)
+            setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, status: newStatus, feedback } : r))
             if (selectedReview?.id === reviewId) {
-                setSelectedReview((prev: any) => ({ ...prev, status: newStatus }))
+                setSelectedReview((prev: any) => ({ ...prev, status: newStatus, feedback }))
             }
         } catch (error) {
             console.error("Failed to update status", error)
@@ -165,77 +165,93 @@ export default function ReviewManagement({ initialReviews, assetTypes }: { initi
                         reviews={filteredReviews}
                         onSelectReview={setSelectedReview}
                         selectedId={selectedReview?.id}
+                        defaultCenter={mapConfig}
+                        defaultZoom={mapConfig.zoom}
                     />
-
-                    {/* Selected Review Overlay / Modal */}
-                    {selectedReview && (
-                        <div className="absolute top-4 right-4 w-80 bg-white rounded-xl shadow-2xl border p-4 z-[1000] animate-in slide-in-from-right">
-                            <button
-                                onClick={() => setSelectedReview(null)}
-                                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-                            >
-                                <X size={20} />
-                            </button>
-
-                            <h2 className="font-bold text-lg mb-2">Detalhes da Revisão</h2>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="text-xs text-gray-500 font-bold uppercase">Status</label>
-                                    <div className="flex gap-2 mt-1">
-                                        <select
-                                            value={selectedReview.status}
-                                            onChange={(e) => handleStatusChange(selectedReview.id, e.target.value)}
-                                            className="w-full border rounded-lg p-2 text-sm bg-white"
-                                            disabled={isUpdating}
-                                        >
-                                            <option value="PENDING">Em Análise (PENDING)</option>
-                                            <option value="Resolvendo">Resolvendo</option>
-                                            <option value="Resolvida">Resolvida</option>
-                                            <option value="Inválida">Inválida</option>
-                                            <option value="APPROVED">Aprovado (APPROVED)</option>
-                                            <option value="REJECTED">Rejeitado (REJECTED)</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {selectedReview.evidenceUrl && (
-                                    <div>
-                                        <label className="text-xs text-gray-500 font-bold uppercase block mb-1">Foto</label>
-                                        <a href={selectedReview.evidenceUrl} target="_blank" rel="noopener noreferrer">
-                                            <img src={selectedReview.evidenceUrl} alt="Evidence" className="w-full rounded-lg border hover:opacity-90 transition" />
-                                        </a>
-                                    </div>
-                                )}
-
-                                <div>
-                                    <label className="text-xs text-gray-500 font-bold uppercase block mb-1">Descrição</label>
-                                    <div className="bg-gray-50 p-3 rounded-lg text-sm border">
-                                        <p className="font-bold text-gray-800 mb-1">{selectedReview.data?.problemType}</p>
-                                        <p className="text-gray-600">{selectedReview.data?.description || 'Sem descrição'}</p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="text-xs text-gray-500 font-bold uppercase block mb-1">Localização</label>
-                                    <p className="text-sm flex items-center gap-1">
-                                        <MapPin size={14} />
-                                        {selectedReview.asset ?
-                                            `${selectedReview.asset.assetType?.name} #${selectedReview.asset.hashCode}` :
-                                            'Localização Geral'
-                                        }
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <label className="text-xs text-gray-500 font-bold uppercase block mb-1">Usuário</label>
-                                    <p className="text-sm">{selectedReview.user?.name || 'Sem nome'} ({selectedReview.user?.phone || 'Sem telefone'})</p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
+
+            {/* Selected Review Overlay / Modal - FIXED via Fixed Position Portal-like style */}
+            {selectedReview && (
+                <div className="fixed top-20 right-4 w-96 max-h-[calc(100vh-6rem)] overflow-y-auto bg-white rounded-xl shadow-2xl border p-6 z-[9999] animate-in slide-in-from-right">
+                    <button
+                        onClick={() => setSelectedReview(null)}
+                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-full"
+                    >
+                        <X size={20} />
+                    </button>
+
+                    <h2 className="font-bold text-lg mb-4">Detalhes da Revisão</h2>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="text-xs text-gray-500 font-bold uppercase">Status</label>
+                            <div className="flex gap-2 mt-1">
+                                <select
+                                    value={selectedReview.status}
+                                    onChange={(e) => handleStatusChange(selectedReview.id, e.target.value, selectedReview.feedback || '')}
+                                    className="w-full border rounded-lg p-2 text-sm bg-white"
+                                    disabled={isUpdating}
+                                >
+                                    <option value="PENDING">Em Análise (PENDING)</option>
+                                    <option value="Resolvendo">Resolvendo</option>
+                                    <option value="Resolvida">Resolvida</option>
+                                    <option value="Inválida">Inválida</option>
+                                    <option value="APPROVED">Aprovado (APPROVED)</option>
+                                    <option value="REJECTED">Rejeitado (REJECTED)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-xs text-gray-500 font-bold uppercase block mb-1">Feedback para o Cidadão</label>
+                            <textarea
+                                value={selectedReview.feedback || ''}
+                                onChange={(e) => {
+                                    // Update local state immediately for typing
+                                    setSelectedReview((prev: any) => ({ ...prev, feedback: e.target.value }))
+                                }}
+                                onBlur={(e) => handleStatusChange(selectedReview.id, selectedReview.status, e.target.value)}
+                                className="w-full border rounded-lg p-2 text-sm min-h-[80px]"
+                                placeholder="Escreva uma mensagem para o cidadão..."
+                            />
+                        </div>
+
+                        {selectedReview.evidenceUrl && (
+                            <div>
+                                <label className="text-xs text-gray-500 font-bold uppercase block mb-1">Foto</label>
+                                <a href={selectedReview.evidenceUrl} target="_blank" rel="noopener noreferrer">
+                                    <img src={selectedReview.evidenceUrl} alt="Evidence" className="w-full rounded-lg border hover:opacity-90 transition" />
+                                </a>
+                            </div>
+                        )}
+
+                        <div>
+                            <label className="text-xs text-gray-500 font-bold uppercase block mb-1">Descrição</label>
+                            <div className="bg-gray-50 p-3 rounded-lg text-sm border">
+                                <p className="font-bold text-gray-800 mb-1">{selectedReview.data?.problemType}</p>
+                                <p className="text-gray-600">{selectedReview.data?.description || 'Sem descrição'}</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-xs text-gray-500 font-bold uppercase block mb-1">Localização</label>
+                            <p className="text-sm flex items-center gap-1">
+                                <MapPin size={14} />
+                                {selectedReview.asset ?
+                                    `${selectedReview.asset.assetType?.name} #${selectedReview.asset.hashCode}` :
+                                    'Localização Geral'
+                                }
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="text-xs text-gray-500 font-bold uppercase block mb-1">Usuário</label>
+                            <p className="text-sm">{selectedReview.user?.name || 'Sem nome'} ({selectedReview.user?.phone || 'Sem telefone'})</p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

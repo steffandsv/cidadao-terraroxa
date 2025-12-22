@@ -9,7 +9,7 @@ const MapPicker = dynamic(() => import('@/app/components/admin/MapPicker'), {
   loading: () => <div className="h-[400px] w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">Carregando Mapa...</div>
 })
 
-export default function CreateAssetPage({ types }: { types: any[] }) {
+export default function CreateAssetPage({ types, mapConfig }: { types: any[], mapConfig: any }) {
   const [lat, setLat] = useState<number | null>(null)
   const [lng, setLng] = useState<number | null>(null)
   const [selectedType, setSelectedType] = useState<number | null>(null)
@@ -31,7 +31,12 @@ export default function CreateAssetPage({ types }: { types: any[] }) {
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Localização (Clique no mapa)</label>
             <div className="border rounded-lg overflow-hidden">
-                <MapPicker onSelect={(l, lg) => { setLat(l); setLng(lg) }} />
+                <MapPicker
+                    onSelect={(l, lg) => { setLat(l); setLng(lg) }}
+                    initialLat={mapConfig.lat}
+                    initialLng={mapConfig.lng}
+                    initialZoom={mapConfig.zoom}
+                />
             </div>
             <input type="hidden" name="lat" value={lat || ''} />
             <input type="hidden" name="lng" value={lng || ''} />
