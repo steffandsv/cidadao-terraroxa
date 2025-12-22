@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db'
-import { Plus } from 'lucide-react'
+import { Plus, Edit } from 'lucide-react'
 import Link from 'next/link'
 import { DynamicIcon } from '@/app/components/icons/DynamicIcon'
 
@@ -26,7 +26,12 @@ export default async function AssetTypesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {types.map(t => (
-                    <div key={t.id} className="bg-white p-6 rounded-xl shadow-sm border flex flex-col gap-4">
+                    <div key={t.id} className="bg-white p-6 rounded-xl shadow-sm border flex flex-col gap-4 group relative">
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Link href={`/admin/types/${t.id}/edit`} className="p-2 bg-gray-100 hover:bg-emerald-100 hover:text-emerald-600 rounded-full flex">
+                                <Edit size={16} />
+                            </Link>
+                        </div>
                         <div className="flex items-center gap-3 border-b pb-4">
                             <div className="p-3 bg-emerald-100 rounded-full text-emerald-600">
                                 <DynamicIcon name={t.icon || 'box'} className="w-6 h-6" />

@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import { MoreHorizontal, Eye, Edit, Trash, QrCode } from 'lucide-react'
 import QRCodeGenerator from '@/app/components/admin/QRCodeGenerator'
 import { createPortal } from 'react-dom'
+import Link from 'next/link'
+import { deleteAsset } from '@/app/actions/admin/assets'
 
 export default function AssetActions({ asset }: { asset: any }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -20,6 +22,13 @@ export default function AssetActions({ asset }: { asset: any }) {
         })
     }
   }, [isOpen])
+
+  const handleDelete = async () => {
+      if (confirm('Tem certeza que deseja apagar este ativo? Esta ação não pode ser desfeita.')) {
+          await deleteAsset(asset.id)
+          setIsOpen(false)
+      }
+  }
 
   return (
     <>
@@ -47,13 +56,25 @@ export default function AssetActions({ asset }: { asset: any }) {
                 >
                     <QrCode size={16} /> Ver QR Code
                 </button>
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700">
+                <a
+                    href={`/asset/${asset.id}`}
+                    target="_blank"
+                    className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700"
+                    onClick={() => setIsOpen(false)}
+                >
                     <Eye size={16} /> Ver Detalhes
-                </button>
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700">
+                </a>
+                <Link
+                    href={`/admin/assets/${asset.id}/edit`}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700"
+                    onClick={() => setIsOpen(false)}
+                >
                     <Edit size={16} /> Editar
-                </button>
-                <button className="w-full text-left px-4 py-2 hover:bg-red-50 flex items-center gap-2 text-sm text-red-600 border-t mt-1">
+                </Link>
+                <button
+                    onClick={handleDelete}
+                    className="w-full text-left px-4 py-2 hover:bg-red-50 flex items-center gap-2 text-sm text-red-600 border-t mt-1"
+                >
                     <Trash size={16} /> Apagar
                 </button>
             </div>
