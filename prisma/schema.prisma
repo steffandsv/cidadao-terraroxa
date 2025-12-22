@@ -16,8 +16,19 @@ model User {
   phone      String   @unique @db.VarChar(20)
   name       String?  @db.VarChar(255)
   role       String   @default("USER") @db.VarChar(20)
-  levelTitle String?  @default("Novato") @map("level_title") @db.VarChar(50)
+  levelTitle String?  @default("Cidadão") @map("level_title") @db.VarChar(50)
   createdAt  DateTime @default(now()) @map("created_at")
+
+  // Verification Data
+  fullName           String?  @map("full_name") @db.VarChar(255)
+  cpf                String?  @unique @db.VarChar(14)
+  addressStreet      String?  @map("address_street") @db.VarChar(255)
+  addressNumber      String?  @map("address_number") @db.VarChar(20)
+  addressZip         String?  @map("address_zip") @db.VarChar(10)
+  city               String?  @default("Terra Roxa") @db.VarChar(100)
+  state              String?  @default("SP") @db.VarChar(2)
+  verificationStatus String   @default("NONE") @map("verification_status") @db.VarChar(20) // NONE, PENDING, APPROVED, REJECTED
+  rejectionReason    String?  @map("rejection_reason") @db.Text
 
   actions      UserAction[]
   pointsLedger PointsLedger[]
