@@ -22,6 +22,13 @@ export default async function Dashboard() {
         const calcRankIdx = ranks.indexOf(profile.calculatedLevel || 'Cidadão')
         const showLevelUp = calcRankIdx > currentRankIdx
 
+        // Determine Display Name
+        let displayName = profile.name || 'Cidadão'
+        if (profile.fullName) {
+             const parts = profile.fullName.split(' ')
+             displayName = parts[0]
+        }
+
         return (
             <main className="min-h-screen bg-gray-50 pb-20">
                 <PendingReportHandler />
@@ -38,7 +45,7 @@ export default async function Dashboard() {
                 <header className="bg-blue-800 text-white p-6 pb-12 rounded-b-3xl shadow-lg">
                     <div className="flex justify-between items-center mb-4">
                         <div>
-                            <h1 className="text-3xl font-bold">Olá, {profile.name || 'Cidadão'}!</h1>
+                            <h1 className="text-3xl font-bold">Olá, {displayName}!</h1>
                             <p className="opacity-90">{profile.phone}</p>
                         </div>
                         <form action={logout}>
