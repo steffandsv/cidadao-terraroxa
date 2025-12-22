@@ -86,3 +86,4 @@ https://nextjs.org/docs/messages/module-not-found
  GET /dashboard 200 in 1684ms (compile: 806ms, render: 878ms)
  GET /verify 200 in 1213ms (compile: 1184ms, render: 29ms)
 ✓ Compiled in 99ms
+✓ Compiled in 333ms
