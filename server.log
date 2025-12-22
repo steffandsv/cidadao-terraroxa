@@ -1,21 +1,88 @@
 
-> temp_app@0.1.0 start
-> npx prisma db push && next start
+> temp_app@0.1.0 dev
+> next dev
 
-Environment variables loaded from .env
-Prisma schema loaded from prisma/schema.prisma
-Datasource "db": MySQL database "u225637494_cidadao" at "srv466.hstgr.io:3306"
-
-The database is already in sync with the Prisma schema.
-
-Running generate... (Use --skip-generate to skip the generators)
-[2K[1A[2K[GRunning generate... - Prisma Client
-[2K[1A[2K[G✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 341ms
-
-▲ Next.js 16.1.0
+▲ Next.js 16.1.0 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
 
 ✓ Starting...
-⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
-✓ Ready in 881ms
+✓ Ready in 1156ms
+ GET /dashboard 200 in 1250ms (compile: 380ms, render: 869ms)
+ GET /dashboard 200 in 361ms (compile: 10ms, render: 351ms)
+ GET /dashboard 200 in 270ms (compile: 4ms, render: 266ms)
+ GET /dashboard 200 in 277ms (compile: 5ms, render: 272ms)
+⨯ ./app/dashboard/page.tsx:7:1
+Module not found: Can't resolve '@/app/components/LevelUpOverlay'
+[0m [90m  5 |[39m [36mimport[39m { [33mTrophy[39m[33m,[39m [33mStar[39m[33m,[39m [33mMapPin[39m[33m,[39m [33mScan[39m[33m,[39m [33mAlertTriangle[39m[33m,[39m [33mClock[39m[33m,[39m [33mCheckCircle[39m[33m,[39m [33mXCircle[39m } [36mfrom[39m [32m'lucide-react'[39m
+ [90m  6 |[39m [36mimport[39m [33mPendingReportHandler[39m [36mfrom[39m [32m'./PendingReportHandler'[39m
+[31m[1m>[22m[39m[90m  7 |[39m [36mimport[39m [33mLevelUpOverlay[39m [36mfrom[39m [32m'@/app/components/LevelUpOverlay'[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m  8 |[39m [36mimport[39m [33mDashboardInteractions[39m [36mfrom[39m [32m'./interactions'[39m
+ [90m  9 |[39m
+ [90m 10 |[39m [36mexport[39m [36mconst[39m dynamic [33m=[39m [32m'force-dynamic'[39m[0m
+
+Import map: aliased to relative './app/components/LevelUpOverlay' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/dashboard/page.tsx:7:1
+Module not found: Can't resolve '@/app/components/LevelUpOverlay'
+[0m [90m  5 |[39m [36mimport[39m { [33mTrophy[39m[33m,[39m [33mStar[39m[33m,[39m [33mMapPin[39m[33m,[39m [33mScan[39m[33m,[39m [33mAlertTriangle[39m[33m,[39m [33mClock[39m[33m,[39m [33mCheckCircle[39m[33m,[39m [33mXCircle[39m } [36mfrom[39m [32m'lucide-react'[39m
+ [90m  6 |[39m [36mimport[39m [33mPendingReportHandler[39m [36mfrom[39m [32m'./PendingReportHandler'[39m
+[31m[1m>[22m[39m[90m  7 |[39m [36mimport[39m [33mLevelUpOverlay[39m [36mfrom[39m [32m'@/app/components/LevelUpOverlay'[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m  8 |[39m [36mimport[39m [33mDashboardInteractions[39m [36mfrom[39m [32m'./interactions'[39m
+ [90m  9 |[39m
+ [90m 10 |[39m [36mexport[39m [36mconst[39m dynamic [33m=[39m [32m'force-dynamic'[39m[0m
+
+Import map: aliased to relative './app/components/LevelUpOverlay' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/dashboard/page.tsx:7:1
+Module not found: Can't resolve '@/app/components/LevelUpOverlay'
+[0m [90m  5 |[39m [36mimport[39m { [33mTrophy[39m[33m,[39m [33mStar[39m[33m,[39m [33mMapPin[39m[33m,[39m [33mScan[39m[33m,[39m [33mAlertTriangle[39m[33m,[39m [33mClock[39m[33m,[39m [33mCheckCircle[39m[33m,[39m [33mXCircle[39m } [36mfrom[39m [32m'lucide-react'[39m
+ [90m  6 |[39m [36mimport[39m [33mPendingReportHandler[39m [36mfrom[39m [32m'./PendingReportHandler'[39m
+[31m[1m>[22m[39m[90m  7 |[39m [36mimport[39m [33mLevelUpOverlay[39m [36mfrom[39m [32m'@/app/components/LevelUpOverlay'[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m  8 |[39m [36mimport[39m [33mDashboardInteractions[39m [36mfrom[39m [32m'./interactions'[39m
+ [90m  9 |[39m
+ [90m 10 |[39m [36mexport[39m [36mconst[39m dynamic [33m=[39m [32m'force-dynamic'[39m[0m
+
+Import map: aliased to relative './app/components/LevelUpOverlay' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET /dashboard 500 in 1655ms (compile: 1471ms, render: 184ms)
+⨯ ./app/dashboard/page.tsx:7:1
+Module not found: Can't resolve '@/app/components/LevelUpOverlay'
+[0m [90m  5 |[39m [36mimport[39m { [33mTrophy[39m[33m,[39m [33mStar[39m[33m,[39m [33mMapPin[39m[33m,[39m [33mScan[39m[33m,[39m [33mAlertTriangle[39m[33m,[39m [33mClock[39m[33m,[39m [33mCheckCircle[39m[33m,[39m [33mXCircle[39m } [36mfrom[39m [32m'lucide-react'[39m
+ [90m  6 |[39m [36mimport[39m [33mPendingReportHandler[39m [36mfrom[39m [32m'./PendingReportHandler'[39m
+[31m[1m>[22m[39m[90m  7 |[39m [36mimport[39m [33mLevelUpOverlay[39m [36mfrom[39m [32m'@/app/components/LevelUpOverlay'[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m  8 |[39m [36mimport[39m [33mDashboardInteractions[39m [36mfrom[39m [32m'./interactions'[39m
+ [90m  9 |[39m
+ [90m 10 |[39m [36mexport[39m [36mconst[39m dynamic [33m=[39m [32m'force-dynamic'[39m[0m
+
+Import map: aliased to relative './app/components/LevelUpOverlay' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET /dashboard 500 in 39ms (compile: 21ms, render: 18ms)
+✓ Compiled in 1129ms
+ GET /dashboard 200 in 1759ms (compile: 961ms, render: 798ms)
+ GET /verify 404 in 2.0s (compile: 1730ms, render: 287ms)
+ GET /verify 404 in 307ms (compile: 13ms, render: 294ms)
+✓ Compiled in 1775ms
+ GET /dashboard 200 in 1684ms (compile: 806ms, render: 878ms)
+ GET /verify 200 in 1213ms (compile: 1184ms, render: 29ms)
+✓ Compiled in 99ms
