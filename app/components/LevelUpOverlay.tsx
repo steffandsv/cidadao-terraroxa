@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 
 interface LevelUpOverlayProps {
     newLevel: string
-    onClaim: () => Promise<void>
+    onClaim: () => Promise<any>
 }
 
 export default function LevelUpOverlay({ newLevel, onClaim }: LevelUpOverlayProps) {
