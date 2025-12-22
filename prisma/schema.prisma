@@ -16,7 +16,7 @@ model User {
   phone      String   @unique @db.VarChar(20)
   name       String?  @db.VarChar(255)
   role       String   @default("USER") @db.VarChar(20)
-  levelTitle String?  @default("Cidadão") @map("level_title") @db.VarChar(50)
+  levelTitle String?  @default("Visitante") @map("level_title") @db.VarChar(50)
   createdAt  DateTime @default(now()) @map("created_at")
 
   // Verification Data
