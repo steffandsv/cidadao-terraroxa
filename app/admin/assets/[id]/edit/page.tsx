@@ -2,9 +2,10 @@ import { prisma } from '@/lib/db'
 import EditAssetForm from '@/app/components/admin/EditAssetForm'
 import { notFound } from 'next/navigation'
 
-export default async function EditAssetPage({ params }: { params: { id: string } }) {
+export default async function EditAssetPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
     const asset = await prisma.asset.findUnique({
-        where: { id: parseInt(params.id) }
+        where: { id: parseInt(id) }
     })
 
     const types = await prisma.assetType.findMany()
