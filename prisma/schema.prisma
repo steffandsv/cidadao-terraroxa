@@ -32,6 +32,7 @@ model User {
 
   actions      UserAction[]
   pointsLedger PointsLedger[]
+  verifications ActionVerification[]
 
   @@map("users")
 }
@@ -98,8 +99,23 @@ model UserAction {
   rule   GamificationRule @relation(fields: [ruleSlug], references: [slug])
   ledger PointsLedger[]
   feedback String? @db.Text
+  verifications ActionVerification[]
 
   @@map("user_actions")
+}
+
+model ActionVerification {
+  id          Int      @id @default(autoincrement())
+  userActionId Int      @map("user_action_id")
+  userId      Int?      @map("user_id")
+  score       Int       // 0, 3, 6, 10
+  details     String?   @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  userAction  UserAction @relation(fields: [userActionId], references: [id])
+  user        User?      @relation(fields: [userId], references: [id])
+
+  @@map("action_verifications")
 }
 
 model Config {

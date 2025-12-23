@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
@@ -38,7 +38,21 @@ function MapController({ center, zoom }: { center: [number, number], zoom: numbe
     return null;
 }
 
-export default function ReviewMap({ reviews, onSelectReview, selectedId, defaultCenter, defaultZoom }: { reviews: any[], onSelectReview: (r: any) => void, selectedId: number | null, defaultCenter: { lat: number, lng: number }, defaultZoom: number }) {
+export default function ReviewMap({
+    reviews,
+    onSelectReview,
+    selectedId,
+    defaultCenter,
+    defaultZoom,
+    renderPopup
+}: {
+    reviews: any[],
+    onSelectReview: (r: any) => void,
+    selectedId: number | null,
+    defaultCenter: { lat: number, lng: number },
+    defaultZoom: number,
+    renderPopup?: (review: any) => React.ReactNode
+}) {
 
     useEffect(() => {
         fixLeafletIcons()
@@ -75,6 +89,11 @@ export default function ReviewMap({ reviews, onSelectReview, selectedId, default
                             click: () => onSelectReview(review),
                         }}
                     >
+                        {renderPopup && (
+                            <Popup>
+                                {renderPopup(review)}
+                            </Popup>
+                        )}
                     </Marker>
                 )
             })}

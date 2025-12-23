@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { submitReport, submitAnonymousReport } from '@/app/actions/game'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import UrgencyModal from './UrgencyModal'
 
 // MapView must be client-side only (Leaflet requirement)
 const MapView = dynamic(() => import('@/app/components/MapView'), {
@@ -17,6 +18,8 @@ export default function ReportForm({ asset, user }: { asset: any, user?: any }) 
     const [selectedProblem, setSelectedProblem] = useState('')
     const [description, setDescription] = useState('')
     const [showInterstitial, setShowInterstitial] = useState(false)
+    const [showUrgency, setShowUrgency] = useState(false)
+    const [createdActionId, setCreatedActionId] = useState<number | null>(null)
 
 
     // Default problems if schema is missing (fallback)
@@ -71,8 +74,17 @@ export default function ReportForm({ asset, user }: { asset: any, user?: any }) 
 
         try {
             const result = await action(formData)
-            if (result && result.url) {
-                router.push(result.url)
+            if (result && result.success) {
+                 if (user && result.actionId) {
+                     // If user is logged in, show urgency modal for THEIR report
+                     setCreatedActionId(result.actionId)
+                     setShowUrgency(true)
+                 } else if (result.url) {
+                    router.push(result.url)
+                 }
+            } else {
+                 alert("Erro: " + (result?.message || 'Erro desconhecido'))
+                 setSubmitting(false)
             }
         } catch (e) {
             console.error("Submission failed", e)
@@ -200,6 +212,14 @@ export default function ReportForm({ asset, user }: { asset: any, user?: any }) 
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Urgency Modal */}
+            {showUrgency && createdActionId && (
+                <UrgencyModal
+                    actionId={createdActionId}
+                    onClose={() => router.push('/dashboard?success=report_submitted')}
+                />
             )}
         </>
     )

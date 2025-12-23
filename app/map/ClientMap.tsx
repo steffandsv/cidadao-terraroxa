@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { MapPin, Filter, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import VerificationPopup from '@/app/components/VerificationPopup'
 
 // Dynamically import Map with no SSR
 const ReviewMap = dynamic(() => import('@/app/admin/review/components/ReviewMap'), {
@@ -11,27 +12,22 @@ const ReviewMap = dynamic(() => import('@/app/admin/review/components/ReviewMap'
     loading: () => <div className="w-full h-full bg-gray-100 animate-pulse flex items-center justify-center text-gray-400">Carregando Mapa...</div>
 })
 
-export default function ClientMap({ assets, mapConfig }: { assets: any[], mapConfig: any }) {
+export default function ClientMap({ actions, mapConfig, user }: { actions: any[], mapConfig: any, user?: any }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeType, setActiveType] = useState<number | null>(null)
 
-  // Extract unique types from assets
-  const types = Array.from(new Set(assets.map(a => JSON.stringify({ id: a.assetTypeId, name: a.assetType?.name || 'Geral' }))))
+  // Extract unique types from actions
+  const types = Array.from(new Set(actions.map(a => JSON.stringify({ id: a.asset.assetTypeId, name: a.asset.assetType?.name || 'Geral' }))))
       .map(s => JSON.parse(s))
 
-  const filteredAssets = activeType
-    ? assets.filter(a => a.assetTypeId === activeType)
-    : assets
+  const filteredActions = activeType
+    ? actions.filter(a => a.asset.assetTypeId === activeType)
+    : actions
 
-  // Adapt assets to match ReviewMap's expected input structure (or update ReviewMap to be generic)
-  // ReviewMap expects "reviews" which have { asset: { geoLat, geoLng, ... } }
-  // We can wrap assets in a fake review object or modify ReviewMap.
-  // Ideally, we should refactor ReviewMap to be generic "MapWithMarkers" but for speed I will wrap.
-  const mapData = filteredAssets.map(a => ({
-      id: a.id,
-      status: 'DEFAULT', // Blue marker
-      asset: a
-  }))
+  // ReviewMap expects "reviews" structure. We pass `actions` directly as they match closely (UserAction).
+  // Need to ensure `status` maps to color if needed, or override.
+  // We want to visualize "Criticality" maybe?
+  // For now, let's keep status color logic (PENDING = Yellow).
 
   return (
     <div className="relative h-screen w-full bg-gray-200 overflow-hidden">
@@ -84,11 +80,12 @@ export default function ClientMap({ assets, mapConfig }: { assets: any[], mapCon
       {/* Map Area */}
       <div className="h-full w-full bg-gray-100 relative z-10">
           <ReviewMap
-            reviews={mapData}
-            onSelectReview={() => {}} // No action on click for public map (maybe popup later)
+            reviews={filteredActions}
+            onSelectReview={() => {}}
             selectedId={null}
             defaultCenter={mapConfig}
             defaultZoom={mapConfig.zoom}
+            renderPopup={(action) => <VerificationPopup action={action} user={user} />}
           />
       </div>
 

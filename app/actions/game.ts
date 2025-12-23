@@ -229,7 +229,7 @@ export async function submitReport(formData: FormData) {
     const description = formData.get('description') as string
     const evidenceUrl = formData.get('evidenceUrl') as string
 
-    await prisma.userAction.create({
+    const action = await prisma.userAction.create({
         data: {
             userId: session.user.id,
             assetId,
@@ -243,7 +243,7 @@ export async function submitReport(formData: FormData) {
         }
     })
 
-    return { success: true, url: '/dashboard?success=report_submitted' }
+    return { success: true, url: '/dashboard?success=report_submitted', actionId: action.id }
 }
 
 export async function getUserReports() {
