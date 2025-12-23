@@ -22,7 +22,8 @@ export default async function MapPage() {
         },
         include: {
             asset: { include: { assetType: true } },
-            verifications: true
+            verifications: true,
+            user: true
         }
     })
 
