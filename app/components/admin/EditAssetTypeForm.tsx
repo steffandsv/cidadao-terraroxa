@@ -108,7 +108,7 @@ export default function EditAssetTypeForm({ type }: { type: any }) {
                                 className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
                             />
                             <div className="p-2 bg-gray-100 rounded border flex items-center justify-center w-12 h-10">
-                                <DynamicIcon name={formData.icon || 'box'} size={20} />
+                                <DynamicIcon name={formData.icon || 'box'} className="w-5 h-5" />
                             </div>
                         </div>
                     </div>
