@@ -33,6 +33,7 @@ model User {
   actions      UserAction[]
   pointsLedger PointsLedger[]
   verifications ActionVerification[]
+  inspections   WorkInspection[]
 
   @@map("users")
 }
@@ -137,4 +138,43 @@ model PointsLedger {
   action UserAction? @relation(fields: [actionId], references: [id])
 
   @@map("points_ledger")
+}
+
+model PublicWork {
+  id             Int       @id @default(autoincrement())
+  qrHash         String    @unique @map("qr_hash") @db.VarChar(50)
+  title          String    @db.VarChar(255)
+  description    String?   @db.Text
+  budgetValue    Decimal?  @map("budget_value") @db.Decimal(15, 2)
+  deadlineDate   DateTime? @map("deadline_date") @db.Date
+  currentStatus  String    @map("current_status") @db.VarChar(50)
+  statusDeadline DateTime? @map("status_deadline") @db.Date
+  coverPhotoUrl  String?   @map("cover_photo_url") @db.Text
+  geoLat         Decimal?  @map("geo_lat") @db.Decimal(10, 8)
+  geoLng         Decimal?  @map("geo_lng") @db.Decimal(11, 8)
+  metadata       Json?     @db.Json
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  inspections    WorkInspection[]
+
+  @@map("public_works")
+}
+
+model WorkInspection {
+  id               Int      @id @default(autoincrement())
+  workId           Int      @map("work_id")
+  userId           Int?     @map("user_id")
+  ratingSentiment  String   @map("rating_sentiment") @db.VarChar(20)
+  reportText       String?  @map("report_text") @db.Text
+  photoEvidenceUrl String?  @map("photo_evidence_url") @db.Text
+  isVerifiedLoc    Boolean  @default(false) @map("is_verified_location")
+  adminStatus      String   @default("PENDING") @map("admin_status") @db.VarChar(20)
+  pointsAwarded    Int      @default(0) @map("points_awarded")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  work PublicWork @relation(fields: [workId], references: [id])
+  user User?      @relation(fields: [userId], references: [id])
+
+  @@map("work_inspections")
 }

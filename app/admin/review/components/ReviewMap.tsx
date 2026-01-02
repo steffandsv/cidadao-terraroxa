@@ -16,17 +16,18 @@ const fixLeafletIcons = () => {
 }
 
 // Create custom icons for different statuses
-const createIcon = (color: string) => new L.DivIcon({
+const createIcon = (color: string, emoji?: string) => new L.DivIcon({
     className: 'custom-icon',
-    html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
+    html: `<div style="background-color: ${color}; width: 32px; height: 32px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 16px;">${emoji || ''}</div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
 });
 
 const icons = {
-    PENDING: createIcon('#EAB308'), // Yellow
+    PENDING: createIcon('#EAB308', '⚠️'), // Yellow
     APPROVED: createIcon('#22C55E'), // Green
     REJECTED: createIcon('#EF4444'), // Red
+    WORK_IN_PROGRESS: createIcon('#2563EB', '🚧'), // Blue for works
     DEFAULT: createIcon('#3B82F6')   // Blue for others
 };
 

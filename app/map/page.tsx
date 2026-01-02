@@ -3,11 +3,13 @@ import { prisma } from '@/lib/db'
 import { getMapConfig } from '@/app/actions/config'
 import { getSession } from '@/lib/auth'
 import ClientMap from './ClientMap'
+import { getPublicWorks } from '@/app/actions/public-works'
 
 export const dynamic = 'force-dynamic'
 
 export default async function MapPage() {
   let actions: any[] = []
+  let works: any[] = []
   let mapConfig = { lat: -21.0365, lng: -48.5135, zoom: 13 }
   const session = await getSession()
 
@@ -37,9 +39,11 @@ export default async function MapPage() {
         } : null
     })).filter(a => a.asset && a.asset.geoLat && a.asset.geoLng)
 
+    works = await getPublicWorks()
+
   } catch(e) { console.error(e) }
 
   return (
-    <ClientMap actions={actions} mapConfig={mapConfig} user={session?.user} />
+    <ClientMap actions={actions} publicWorks={works} mapConfig={mapConfig} user={session?.user} />
   )
 }
