@@ -152,6 +152,7 @@ model PublicWork {
   coverPhotoUrl  String?   @map("cover_photo_url") @db.Text
   geoLat         Decimal?  @map("geo_lat") @db.Decimal(10, 8)
   geoLng         Decimal?  @map("geo_lng") @db.Decimal(11, 8)
+  progress       Int       @default(0)
   metadata       Json?     @db.Json
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
@@ -178,3 +179,6 @@ model WorkInspection {
 
   @@map("work_inspections")
 }
+
+// Temporary append to force re-read or just edit directly.
+// Actually I will use replace_with_git_merge_diff

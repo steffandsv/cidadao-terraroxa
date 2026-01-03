@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { MapPin, Filter, X, Eye, HardHat } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import VerificationPopup from '@/app/components/VerificationPopup'
+import ProximityWatcher from '@/app/components/ProximityWatcher'
 
 // Dynamically import Map with no SSR
 const ReviewMap = dynamic(() => import('@/app/admin/review/components/ReviewMap'), {
@@ -40,6 +41,7 @@ export default function ClientMap({ actions, publicWorks = [], mapConfig, user }
 
   return (
     <div className="relative h-screen w-full bg-gray-200 overflow-hidden">
+      <ProximityWatcher works={publicWorks} />
 
       {/* Sidebar Toggle */}
       <button
@@ -123,7 +125,7 @@ export default function ClientMap({ actions, publicWorks = [], mapConfig, user }
 
                              <Link
                                href={`/obras/${w.id}`}
-                               className="block w-full text-center bg-blue-600 text-white font-bold text-xs py-2 rounded-lg hover:bg-blue-700 transition"
+                               className="block w-full text-center bg-blue-600 !text-white font-bold text-xs py-2 rounded-lg hover:bg-blue-700 transition"
                              >
                                 VER DETALHES E FISCALIZAR
                              </Link>

@@ -4,10 +4,24 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { updatePublicWork, deletePublicWork } from '@/app/actions/admin/public-works'
 import { Trash2 } from 'lucide-react'
+import ImageUpload from '@/app/components/admin/ImageUpload'
+import dynamic from 'next/dynamic'
+
+// Import MapPicker dynamically
+const MapPicker = dynamic(() => import('@/app/components/admin/MapPicker'), {
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full bg-gray-100 animate-pulse rounded-lg">Carregando mapa...</div>
+})
 
 export default function EditWorkForm({ work }: { work: any }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+
+  // State for fields that need client-side handling
+  const [photoUrl, setPhotoUrl] = useState(work.coverPhotoUrl || '')
+  const [geoLat, setGeoLat] = useState<number | null>(Number(work.geoLat) || null)
+  const [geoLng, setGeoLng] = useState<number | null>(Number(work.geoLng) || null)
+  const [progress, setProgress] = useState(work.progress || 0)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -22,10 +36,11 @@ export default function EditWorkForm({ work }: { work: any }) {
         deadlineDate: formData.get('deadlineDate'),
         currentStatus: formData.get('currentStatus'),
         statusDeadline: formData.get('statusDeadline'),
-        coverPhotoUrl: formData.get('coverPhotoUrl'),
-        geoLat: Number(formData.get('geoLat')),
-        geoLng: Number(formData.get('geoLng')),
-        metadata: work.metadata // Keep existing or update if UI allows
+        coverPhotoUrl: photoUrl,
+        geoLat: geoLat,
+        geoLng: geoLng,
+        progress: Number(progress),
+        metadata: work.metadata
     }
 
     const res = await updatePublicWork(work.id, data)
@@ -105,18 +120,39 @@ export default function EditWorkForm({ work }: { work: any }) {
         </div>
 
         <div>
-            <label className="block text-sm font-bold mb-1">URL da Foto de Capa</label>
-            <input name="coverPhotoUrl" defaultValue={work.coverPhotoUrl || ''} type="url" className="w-full p-2 border rounded" />
+            <label className="block text-sm font-bold mb-1">Progresso: {progress}%</label>
+            <input
+                type="range"
+                min="0"
+                max="100"
+                value={progress}
+                onChange={(e) => setProgress(Number(e.target.value))}
+                className="w-full"
+            />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-            <div>
-                <label className="block text-sm font-bold mb-1">Latitude</label>
-                <input name="geoLat" defaultValue={work.geoLat} type="number" step="any" className="w-full p-2 border rounded" />
+        <ImageUpload
+            label="Foto de Capa"
+            value={photoUrl}
+            onChange={setPhotoUrl}
+        />
+
+        <div>
+            <label className="block text-sm font-bold mb-2">Localização</label>
+            <div className="border rounded-lg overflow-hidden">
+                <MapPicker
+                    initialLat={Number(work.geoLat)}
+                    initialLng={Number(work.geoLng)}
+                    markerPosition={geoLat && geoLng ? [geoLat, geoLng] : null}
+                    onSelect={(lat, lng) => {
+                        setGeoLat(lat)
+                        setGeoLng(lng)
+                    }}
+                />
             </div>
-            <div>
-                <label className="block text-sm font-bold mb-1">Longitude</label>
-                <input name="geoLng" defaultValue={work.geoLng} type="number" step="any" className="w-full p-2 border rounded" />
+            <div className="grid grid-cols-2 gap-4 mt-2">
+                <input name="geoLat" value={geoLat || ''} readOnly className="p-2 border rounded bg-gray-50 text-sm" placeholder="Latitude" />
+                <input name="geoLng" value={geoLng || ''} readOnly className="p-2 border rounded bg-gray-50 text-sm" placeholder="Longitude" />
             </div>
         </div>
 

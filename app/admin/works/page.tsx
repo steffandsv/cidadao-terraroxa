@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getPublicWorks } from '@/app/actions/public-works'
-import { Plus, Edit, Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import WorkActions from '@/app/components/admin/WorkActions'
 
 export default async function AdminWorksPage() {
   const works = await getPublicWorks()
@@ -59,9 +60,7 @@ export default async function AdminWorksPage() {
                 </td>
                 <td className="p-4 text-right">
                   <div className="flex justify-end gap-2">
-                    <Link href={`/admin/works/${work.id}/edit`} className="p-2 text-gray-600 hover:bg-gray-100 rounded">
-                      <Edit size={18} />
-                    </Link>
+                    <WorkActions work={work} />
                   </div>
                 </td>
               </tr>

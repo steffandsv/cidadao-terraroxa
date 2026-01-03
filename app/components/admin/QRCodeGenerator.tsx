@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react'
 import QRCode from 'qrcode'
 import { Download, FileImage } from 'lucide-react'
 
-export default function QRCodeGenerator({ text }: { text: string }) {
+export default function QRCodeGenerator({ text, customPath }: { text: string, customPath?: string }) {
   const [src, setSrc] = useState('')
 
   const baseUrl = 'https://cidadao.terraroxa.sp.gov.br'
-  const fullUrl = `${baseUrl}/asset/${text}`
+  const fullUrl = customPath ? `${baseUrl}${customPath}` : `${baseUrl}/asset/${text}`
 
   useEffect(() => {
     // Generate preview
