@@ -27,11 +27,8 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
 
   // Calculate progress
   const now = new Date().getTime()
-  const start = new Date(work.createdAt).getTime() // Assuming created_at is roughly start, or use metadata
-  const end = work.deadlineDate ? new Date(work.deadlineDate).getTime() : now + 100000000
-  const total = end - start
-  const current = now - start
-  const progress = Math.min(100, Math.max(0, (current / total) * 100))
+  // Use progress from DB if available, otherwise calculate fallback (though DB should be source of truth now)
+  const progress = work.progress !== undefined ? work.progress : 0
 
   useEffect(() => {
     if (navigator.geolocation && work.geoLat && work.geoLng) {
