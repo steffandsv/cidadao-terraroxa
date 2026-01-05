@@ -78,6 +78,7 @@ export default function ImageUpload({ value, onChange, label = 'Imagem' }: Image
                         alt="Preview"
                         fill
                         className="object-cover"
+						unoptimized
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                         <button
