@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { MapPin, Calendar, DollarSign, Camera, CheckCircle } from 'lucide-react'
+import { MapPin, Calendar, DollarSign, Camera, CheckCircle, Trophy } from 'lucide-react'
 import { submitInspection } from '@/app/actions/public-works'
 import dynamic from 'next/dynamic'
 import ImageUpload from '@/app/components/admin/ImageUpload'
@@ -18,6 +18,7 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
   const [loading, setLoading] = useState(false)
   const [showStamp, setShowStamp] = useState(false)
   const [formVisible, setFormVisible] = useState(false)
+  const [showInterstitial, setShowInterstitial] = useState(false) // For Anonymous vs Login
 
   // Form state
   const [rating, setRating] = useState('')
@@ -56,12 +57,54 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
     }
   }, [work.geoLat, work.geoLng])
 
+  // Helper to format date relative time
+  function timeAgo(dateString: string) {
+      const date = new Date(dateString)
+      const now = new Date()
+      const diffMs = now.getTime() - date.getTime()
+      const diffSec = Math.round(diffMs / 1000)
+      const diffMin = Math.round(diffSec / 60)
+      const diffHour = Math.round(diffMin / 60)
+      const diffDay = Math.round(diffHour / 24)
+      const diffWeek = Math.round(diffDay / 7)
+
+      if (diffSec < 60) return 'agora mesmo'
+      if (diffMin < 60) return `há ${diffMin} min`
+      if (diffHour < 24) return `há ${diffHour} h`
+      if (diffDay === 1) return 'há 1 dia'
+      if (diffDay < 7) return `há ${diffDay} dias`
+      if (diffWeek === 1) return 'há 1 semana'
+      return `há ${diffWeek} semanas`
+  }
+
+  // Handle Initial Click on Inspect
+  function handleInspectClick() {
+      if (!canInspect) return;
+
+      if (user) {
+          // If logged in, go straight to form
+          setFormVisible(true)
+      } else {
+          // If not logged in, show interstitial
+          setShowInterstitial(true)
+      }
+  }
+
+  function handleLoginRedirect() {
+      // Save intent if possible, or just redirect.
+      // Since the inspection requires proximity, saving state might be tricky if they come back later/elsewhere.
+      // But we can try to save the work ID to open it again.
+      // However, typical flow is simple redirect.
+      router.push('/dashboard') // Or login page
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
 
     const formData = new FormData()
     formData.append('workId', work.id.toString())
+    // If user is null, this will be skipped, which is fine for anonymous
     if (user?.id) formData.append('userId', user.id.toString())
     formData.append('ratingSentiment', rating)
     formData.append('reportText', report)
@@ -74,16 +117,30 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
 
     if (result.success) {
       setFormVisible(false)
+      setShowInterstitial(false) // Just in case
       setShowStamp(true)
       // Sound effect could be played here
       setTimeout(() => {
         router.refresh()
         setShowStamp(false)
+        // Reset form
+        setRating('')
+        setReport('')
+        setPhotoUrl('')
+        setProgressEstimate(50)
       }, 3000)
     } else {
       alert(result.message)
     }
     setLoading(false)
+  }
+
+  // Handle Anonymous Submission via Interstitial
+  // Actually, for anonymous, we just open the form but without user attached.
+  // The backend supports userId=null.
+  function handleAnonymousContinue() {
+      setShowInterstitial(false)
+      setFormVisible(true)
   }
 
   return (
@@ -95,6 +152,11 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
           alt={work.title}
           fill
           className="object-cover"
+          onError={(e) => {
+             // Fallback if image fails
+             const target = e.target as HTMLImageElement;
+             target.srcset = "/placeholder.jpg"
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
           <h1 className="text-2xl font-bold text-white">{work.title}</h1>
@@ -151,7 +213,7 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
           </p>
 
           <button
-            onClick={() => canInspect && setFormVisible(true)}
+            onClick={handleInspectClick}
             disabled={!canInspect}
             className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
               canInspect
@@ -171,7 +233,7 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
              {work.inspections?.length === 0 && <p className="text-gray-400 italic">Nenhuma vistoria verificada ainda.</p>}
              {work.inspections?.map((insp: any) => (
                <div key={insp.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex gap-4">
-                 <div className={`w-2 h-full rounded-full ${
+                 <div className={`w-2 h-full flex-shrink-0 rounded-full ${
                      insp.ratingSentiment === 'positive' ? 'bg-green-500' :
                      insp.ratingSentiment === 'neutral' ? 'bg-yellow-500' : 'bg-red-500'
                  }`}></div>
@@ -182,6 +244,9 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
                      </span>
                      <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
                        Verificado
+                     </span>
+                     <span className="text-gray-400 text-xs ml-auto">
+                        {timeAgo(insp.createdAt)}
                      </span>
                    </div>
                    <p className="text-gray-600 text-sm mb-2">{insp.reportText}</p>
@@ -196,6 +261,40 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
            </div>
         </div>
       </div>
+
+      {/* Interstitial Modal (Login vs Anonymous) */}
+      {showInterstitial && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+                <h2 className="text-xl font-bold text-center text-gray-800">Finalizar Fiscalização</h2>
+
+                <div className="space-y-3">
+                    <p className="text-center text-gray-600 text-sm">
+                        Gostaria de acumular <span className="font-bold text-emerald-600">Pontos Cidadão</span> com esta fiscalização?
+                    </p>
+
+                    <button
+                        onClick={handleLoginRedirect}
+                        className="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-700"
+                    >
+                        <Trophy size={18} />
+                        Sim, quero pontuar!
+                    </button>
+
+                    <button
+                        onClick={handleAnonymousContinue}
+                        className="w-full bg-gray-100 text-gray-600 p-3 rounded-xl font-semibold hover:bg-gray-200 mt-2"
+                    >
+                        Fiscalizar Anonimamente
+                    </button>
+
+                    <button onClick={() => setShowInterstitial(false)} className="w-full text-center text-sm text-gray-400 mt-2">
+                        Voltar
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
 
       {/* Inspection Form Modal */}
       {formVisible && (
