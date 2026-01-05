@@ -63,6 +63,7 @@ export async function submitInspection(formData: FormData) {
   const ratingSentiment = formData.get('ratingSentiment') as string
   const reportText = formData.get('reportText') as string
   const photoEvidenceUrl = formData.get('photoEvidenceUrl') as string
+  const progressEstimate = formData.get('progressEstimate') ? Number(formData.get('progressEstimate')) : null
   const lat = formData.get('lat') ? Number(formData.get('lat')) : null
   const lng = formData.get('lng') ? Number(formData.get('lng')) : null
 
@@ -98,6 +99,7 @@ export async function submitInspection(formData: FormData) {
         userId,
         ratingSentiment,
         reportText,
+        progressEstimate,
         photoEvidenceUrl,
         isVerifiedLoc,
         adminStatus: 'PENDING'

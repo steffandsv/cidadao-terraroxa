@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { MapPin, Calendar, DollarSign, Camera, CheckCircle } from 'lucide-react'
 import { submitInspection } from '@/app/actions/public-works'
 import dynamic from 'next/dynamic'
+import ImageUpload from '@/app/components/admin/ImageUpload'
 
 // Leaflet map for location preview
 const LeafletMap = dynamic(() => import('@/app/admin/review/components/ReviewMap'), { ssr: false })
@@ -22,6 +23,7 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
   const [rating, setRating] = useState('')
   const [report, setReport] = useState('')
   const [photoUrl, setPhotoUrl] = useState('')
+  const [progressEstimate, setProgressEstimate] = useState(50)
   const [userLat, setUserLat] = useState<number | null>(null)
   const [userLng, setUserLng] = useState<number | null>(null)
 
@@ -64,6 +66,7 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
     formData.append('ratingSentiment', rating)
     formData.append('reportText', report)
     formData.append('photoEvidenceUrl', photoUrl)
+    formData.append('progressEstimate', progressEstimate.toString())
     if (userLat) formData.append('lat', userLat.toString())
     if (userLng) formData.append('lng', userLng.toString())
 
@@ -157,13 +160,13 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
             }`}
           >
             <Camera size={20} />
-            {canInspect ? 'REALIZAR VISTORIA TÉCNICA' : 'APROXIME-SE PARA FISCALIZAR'}
+            {canInspect ? 'FISCALIZAR OBRA' : 'APROXIME-SE PARA FISCALIZAR'}
           </button>
         </div>
 
         {/* Recent Inspections */}
         <div>
-           <h3 className="text-lg font-bold text-gray-800 mb-4">Últimos Laudos Verificados</h3>
+           <h3 className="text-lg font-bold text-gray-800 mb-4">Últimas Fiscalizações</h3>
            <div className="space-y-4">
              {work.inspections?.length === 0 && <p className="text-gray-400 italic">Nenhuma vistoria verificada ainda.</p>}
              {work.inspections?.map((insp: any) => (
@@ -198,10 +201,13 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
       {formVisible && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto">
-             <h2 className="text-xl font-bold mb-4">Emitir Laudo Técnico</h2>
+             <h2 className="text-xl font-bold mb-4">Fiscalizar Obra</h2>
              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-2">Parecer Técnico</label>
+                  <label className="block text-sm font-semibold mb-2">
+                    O atual estágio da obra é: <span className="text-blue-600">{work.currentStatus}</span>.
+                    Em sua opinião, você acredita que ela está:
+                  </label>
                   <div className="grid grid-cols-3 gap-2">
                     {['positive', 'neutral', 'negative'].map((s) => (
                        <button
@@ -214,10 +220,24 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
                              : 'border-gray-200 text-gray-500'
                          }`}
                        >
-                         {s === 'positive' ? 'Avançando' : s === 'neutral' ? 'Lenta' : 'Parada'}
+                         {s === 'positive' ? 'AVANÇADA' : s === 'neutral' ? 'LENTA' : 'PARADA'}
                        </button>
                     ))}
                   </div>
+                </div>
+
+                <div>
+                   <label className="block text-sm font-semibold mb-2">
+                     Qual a porcentagem de conclusão TOTAL que você acredita que ela está: <span className="text-blue-600">{progressEstimate}%</span>
+                   </label>
+                   <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={progressEstimate}
+                      onChange={(e) => setProgressEstimate(Number(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                   />
                 </div>
 
                 <div>
@@ -233,13 +253,10 @@ export default function WorkDetails({ work, user }: { work: any, user: any }) {
                 </div>
 
                 <div>
-                   <label className="block text-sm font-semibold mb-2">Evidência Fotográfica (URL)</label>
-                   <input
-                     type="text"
+                   <ImageUpload
+                     label="Evidência Fotográfica"
                      value={photoUrl}
-                     onChange={e => setPhotoUrl(e.target.value)}
-                     className="w-full p-3 border rounded-lg"
-                     placeholder="https://..."
+                     onChange={(url) => setPhotoUrl(url)}
                    />
                 </div>
 

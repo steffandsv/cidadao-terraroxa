@@ -168,6 +168,7 @@ model WorkInspection {
   userId           Int?     @map("user_id")
   ratingSentiment  String   @map("rating_sentiment") @db.VarChar(20)
   reportText       String?  @map("report_text") @db.Text
+  progressEstimate Int?     @map("progress_estimate")
   photoEvidenceUrl String?  @map("photo_evidence_url") @db.Text
   isVerifiedLoc    Boolean  @default(false) @map("is_verified_location")
   adminStatus      String   @default("PENDING") @map("admin_status") @db.VarChar(20)
